@@ -234,6 +234,18 @@
                 transform: translateX(-20px);
             }
         }
+
+        /* Pulsing Loader */
+        .pulse-orb {
+            width: 6px; height: 6px; border-radius: 50%; background: #fff;
+            animation: pulseFade 1.5s infinite ease-in-out;
+        }
+        .pulse-orb:nth-child(2) { animation-delay: 0.2s; }
+        .pulse-orb:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes pulseFade {
+            0%, 100% { transform: scale(0.5); opacity: 0.1; }
+            50% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 15px rgba(255,255,255,0.8); }
+        }
     </style>
 </head>
 <body class="flex p-0 md:p-6 gap-0 md:gap-6 relative box-border antialiased overflow-hidden">
@@ -314,10 +326,7 @@
                 </div>
             </div>
             
-            <div class="flex items-center gap-2 md:gap-3">
-                <button id="metricsBtn" class="liquid-button p-3 rounded-full text-gray-400 group relative hidden md:block" title="Sequence Metrics">
-                    <i data-lucide="bar-chart-2" class="w-4 h-4 group-hover:text-white transition-colors"></i>
-                </button>
+            <div class="flex items-center gap-3">
                 <button id="exportChatBtn" class="liquid-button p-3 rounded-full text-gray-400 group relative" title="Export Data">
                     <i data-lucide="download" class="w-4 h-4 group-hover:text-white transition-colors"></i>
                 </button>
@@ -682,7 +691,7 @@
 
         // --- STATE ---
         const state = {
-            apiKey: "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", 
+            apiKey: "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", 
             model: "openai/gpt-4o-mini",
             systemPrompt: "You are ZXNV, a highly capable, sleek, and minimalist AI. Provide clear, direct, and well-formatted answers.",
             fontSize: "text-base", 
@@ -784,9 +793,7 @@
             toast: document.getElementById('toast'),
             toastMessage: document.getElementById('toastMessage'),
             toastIconContainer: document.getElementById('toastIconContainer'),
-            exportChatBtn: document.getElementById('exportChatBtn'),
-            zenModeBtn: document.getElementById('zenModeBtn'),
-            metricsBtn: document.getElementById('metricsBtn')
+            exportChatBtn: document.getElementById('exportChatBtn')
         };
 
         document.body.classList.add(state.fontSize);
@@ -1972,20 +1979,6 @@
             const a = document.createElement('a'); a.href = url; a.download = `ZXNV_${elements.currentChatTitle.textContent.replace(/\s+/g, '_')}.md`;
             document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
             showToast("Data exported successfully.");
-        });
-
-        // NEW FEATURE: Sequence Metrics
-        elements.metricsBtn.addEventListener('click', () => {
-            playInterfaceSound('click');
-            const msgCount = state.messages.length;
-            if (msgCount === 0) {
-                showToast("Sequence empty. Zero tokens used.", "info");
-                return;
-            }
-            let charCount = 0;
-            state.messages.forEach(m => charCount += (m.content || "").length);
-            const estTokens = Math.round(charCount / 4); // Standard approximation
-            showToast(`Metrics: ${msgCount} Msgs | ~${estTokens.toLocaleString()} Tokens`, "info");
         });
 
         let toastTimeout;
