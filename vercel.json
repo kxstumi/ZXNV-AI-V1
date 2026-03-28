@@ -23,7 +23,6 @@
   "env": {
     "OPENAI_API_KEY": "@OPENAI_API_KEY"
   }
-  {
   "rewrites": [{ "source": "/(.*)", "destination": "/ZXNVAIV1.html" }]
   }
 }
