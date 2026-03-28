@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZXNV AI | Ultimate</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+        /* Pure Monochrome & Liquid Glass Variables with Dynamic Transparency */
+        :root {
+            --bg-base: #000000;
+            --chat-glass-alpha: 0.0225;
+            --chat-blur: 9.6px;
+            
+            /* Fixed default glass for static UI panels (Sidebar, Modals) */
+            --glass-bg: rgba(255, 255, 255, 0.015);
+            --glass-bg-hover: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --glass-shine: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 40px 80px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            --blur-intensity: blur(48px);
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+                radial-gradient(circle at 85% 85%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+            background-attachment: fixed;
+            height: 100dvh;
+            width: 100vw;
+            overflow: hidden; 
+            overscroll-behavior-y: none;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Performance Mode Overrides */
+        body.performance-mode .liquid-glass,
+        body.performance-mode .liquid-button {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            background: #0a0a0a !important;
+            box-shadow: none !important;
+            border: 1px solid #1f1f1f !important;
+        }
+        body.performance-mode .orb { display: none !important; }
+
+        /* Deep Void Aesthetic Overrides */
+        body.deep-void {
+            background-image: none !important;
+            background-color: #000000 !important;
+        }
+        body.deep-void .orb { display: none !important; }
+
+        /* Ambient floating orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -1;
+            animation: float 25s infinite ease-in-out alternate;
+            background: rgba(255, 255, 255, 0.03);
+        }
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, -80px) scale(1.15); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 3px; height: 3px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: transparent; border-radius: 10px; transition: background 0.3s; }
+        *:hover::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Advanced Glass Panel Utilities */
+        .liquid-glass {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-intensity);
+            -webkit-backdrop-filter: var(--blur-intensity);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+
+        /* NEW: Isolated Dynamic Glass for Chat Bubbles & Input Box */
+        .chat-glass {
+            background: rgba(255, 255, 255, var(--chat-glass-alpha));
+            backdrop-filter: blur(var(--chat-blur));
+            -webkit-backdrop-filter: blur(var(--chat-blur));
+            border: 1px solid rgba(255, 255, 255, calc(var(--chat-glass-alpha) * 3 + 0.01));
+            box-shadow: var(--glass-shadow);
+        }
+        
+        .liquid-button {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .liquid-button:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-shine);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        .liquid-button:active { transform: translateY(0) scale(0.98); }
+
+        .solid-button {
+            background: #ffffff;
+            color: #000000;
+            font-weight: 500;
+            box-shadow: 0 4px 20px rgba(255,255,255,0.15);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .solid-button:hover {
+            box-shadow: 0 8px 30px rgba(255,255,255,0.25);
+            transform: scale(1.02) translateY(-2px);
+            background: #f0f0f0;
+        }
+
+        /* Tool Icon Button specific */
+        .tool-icon-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            color: #a0a0a0;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .tool-icon-btn:hover {
+            color: #ffffff;
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
+        }
+        .tool-icon-btn.active {
+            color: #000;
+            background: #fff;
+            border-color: #fff;
+        }
+
+        /* Slider Thumb */
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255,255,255,0.8);
+            transition: transform 0.2s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+        /* Input specific smoothness */
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            background: rgba(255,255,255,0.03) !important;
+            border-color: rgba(255,255,255,0.15) !important;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        #messageInput:focus {
+            background: transparent !important;
+            box-shadow: none !important;
+            border-color: transparent !important;
+        }
+
+        /* Next-Level Markdown Typography */
+        .markdown-body { font-family: 'Inter', sans-serif; font-weight: 300; line-height: 1.8; font-size: 0.95rem; }
+        .markdown-body strong { font-weight: 500; color: #fff; }
+        .markdown-body pre {
+            background-color: rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            box-shadow: inset 0 2px 15px rgba(0,0,0,0.8);
+        }
+        .markdown-body code {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: rgba(255,255,255,0.08);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.4rem;
+            font-size: 0.85em;
+            color: #e0e0e0;
+        }
+        .markdown-body pre code { background-color: transparent; padding: 0; color: #d0d0d0; }
+        .markdown-body p { margin-bottom: 1.25rem; }
+        .markdown-body p:last-child { margin-bottom: 0; }
+        .markdown-body ul { list-style-type: none; padding-left: 0; margin-bottom: 1.25rem; }
+        .markdown-body ul li { position: relative; padding-left: 1.5rem; margin-bottom: 0.5rem; }
+        .markdown-body ul li::before {
+            content: ''; position: absolute; left: 0; top: 0.7rem; width: 4px; height: 4px; border-radius: 50%; background: #fff; opacity: 0.5;
+        }
+        
+        /* Advanced Animations */
+        @keyframes messageSlideUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); filter: blur(4px); }
+            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+        .animate-message { animation: messageSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        /* Desktop Sidebar Toggle State */
+        @media (min-width: 768px) {
+            body.sidebar-closed #sidebar {
+                margin-left: -21.5rem !important; /* Smoothly offsets the 20rem width + 1.5rem gap */
+                opacity: 0 !important;
+                pointer-events: none;
+                transform: translateX(-20px);
+            }
+        }
+    </style>
+</head>
+<body class="flex p-0 md:p-6 gap-0 md:gap-6 relative box-border antialiased overflow-hidden">
+
+    <!-- Ambient Floating Backgrounds -->
+    <div class="orb w-[800px] h-[800px] top-[-20%] left-[-20%]"></div>
+    <div class="orb w-[600px] h-[600px] bottom-[-10%] right-[-10%]" style="animation-delay: -5s; animation-duration: 30s;"></div>
+
+    <!-- NEW FEATURE: Vitals Overlay -->
+    <div id="vitalsOverlay" class="hidden fixed bottom-4 right-4 liquid-glass border border-white/10 rounded-xl p-3.5 z-[150] pointer-events-none flex flex-col gap-1.5 text-[9px] font-mono uppercase text-emerald-400 shadow-[0_10px_30px_rgba(0,0,0,0.8)] backdrop-blur-3xl">
+        <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div> NET</div>
+            <span id="pingDisplay" class="text-white">--ms</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 mt-1 border-t border-white/5 pt-1.5">
+            <div class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-indigo-400 rounded-full shadow-[0_0_8px_rgba(129,140,248,0.8)]"></div> MEM</div>
+            <span id="memDisplay" class="text-white">-- MB</span>
+        </div>
+    </div>
+
+    <!-- Sidebar Island -->
+    <aside id="sidebar" class="liquid-glass w-[85vw] max-w-sm md:w-80 h-[100dvh] md:h-full flex flex-col absolute md:relative z-40 md:z-30 -translate-x-full md:translate-x-0 rounded-none md:rounded-[2.5rem] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] border-y-0 border-l-0 md:border">
+        <div class="p-8 pb-6 flex items-center justify-between">
+            <h1 class="text-xl font-medium tracking-[0.25em] uppercase flex items-center gap-4 text-white">
+                <div class="p-2.5 bg-white rounded-full text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                    <i data-lucide="triangle" class="w-4 h-4 fill-current"></i>
+                </div>
+                ZXNV
+            </h1>
+            <button id="closeSidebarBtn" class="md:hidden text-gray-400 hover:text-white transition-colors p-2 rounded-full liquid-button border-none shadow-none">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <div class="px-6 pb-4">
+            <button id="newChatBtn" class="w-full liquid-button rounded-full py-4 px-4 flex items-center justify-center gap-3 font-medium text-sm text-white tracking-widest uppercase">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span data-i18n="init">Initialize</span>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-4 py-2 space-y-2" id="chatList">
+            <!-- Chat history items injected here -->
+        </div>
+
+        <div class="p-6 mt-auto">
+            <div class="liquid-glass rounded-3xl p-1 shadow-none border-white/5">
+                <button id="settingsBtn" class="w-full flex items-center gap-4 text-gray-400 hover:text-white transition-colors p-3.5 rounded-[1.5rem] hover:bg-white/5">
+                    <i data-lucide="sliders" class="w-5 h-5"></i>
+                    <span class="text-xs font-medium tracking-widest uppercase" data-i18n="params">Parameters</span>
+                </button>
+            </div>
+            <div id="userInfo" class="flex items-center justify-center gap-2 text-[10px] text-gray-600 mt-4 font-mono uppercase tracking-widest opacity-50">
+                <span id="userStatus" class="truncate">Link: Disconnected</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-30 hidden opacity-0 transition-opacity duration-500 md:hidden"></div>
+
+    <!-- Main Chat Island -->
+    <main class="flex-1 liquid-glass rounded-none md:rounded-[2.5rem] flex flex-col relative h-[100dvh] md:h-full overflow-hidden transition-all duration-500 w-full z-10 border-none md:border-solid">
+        
+        <!-- Header -->
+        <header class="h-20 flex items-center justify-between px-6 md:px-8 z-20 border-b border-white/5 bg-black/40 backdrop-blur-md shrink-0">
+            <div class="flex items-center gap-4">
+                <button id="toggleSidebarBtn" class="liquid-button p-2.5 rounded-full text-gray-300 hover:text-white transition-colors group" title="Toggle Menu">
+                    <i data-lucide="panel-left" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                </button>
+                <div>
+                    <h2 id="currentChatTitle" class="font-medium text-base md:text-lg text-white/90 truncate max-w-[180px] md:max-w-md tracking-wide" data-i18n="new_chat">New Interaction</h2>
+                    <div class="text-[10px] md:text-xs text-gray-500 flex items-center gap-2 mt-1 font-mono uppercase tracking-widest">
+                        <!-- Pure white status dot -->
+                        <span class="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"></span>
+                        <span id="activeModelDisplay">gpt-4o-mini</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2 md:gap-3">
+                <button id="metricsBtn" class="liquid-button p-3 rounded-full text-gray-400 group relative hidden md:block" title="Sequence Metrics">
+                    <i data-lucide="bar-chart-2" class="w-4 h-4 group-hover:text-white transition-colors"></i>
+                </button>
+                <button id="exportChatBtn" class="liquid-button p-3 rounded-full text-gray-400 group relative" title="Export Data">
+                    <i data-lucide="download" class="w-4 h-4 group-hover:text-white transition-colors"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Messages Area -->
+        <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 md:p-10 pb-[150px] md:pb-[200px] space-y-8 scroll-smooth flex flex-col relative">
+            <!-- Empty state perfectly centered in viewport -->
+            <div id="emptyState" class="flex-1 flex flex-col items-center justify-center max-w-[800px] mx-auto w-full px-4 md:px-0 animate-message pb-10 md:pb-20">
+                
+                <!-- Logo & Titles -->
+                <div class="flex flex-col items-center text-center space-y-4 mb-8 md:mb-12">
+                    <div class="p-4 rounded-full liquid-glass border border-white/10 shadow-[0_0_30px_rgba(255,255,255,0.05)] bg-white/5 mb-2">
+                        <i data-lucide="cpu" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-semibold tracking-wide text-white" data-i18n="workspace">ZXNV Workspace</h2>
+                    <p id="emptyStateSubtitle" class="text-sm md:text-base text-gray-400 font-light" data-i18n="subtitle">What would you like to build today?</p>
+                </div>
+
+                <!-- 2x2 Action Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 w-full">
+                    
+                    <button onclick="insertPrompt('/imagine a futuristic monochrome cityscape ')" class="group relative flex flex-col text-left p-5 md:p-6 rounded-2xl liquid-glass border border-white/5 hover:border-white/20 transition-all duration-300 overflow-hidden bg-[#050505] hover:bg-[#0a0a0a]">
+                        <i data-lucide="image" class="w-5 h-5 text-gray-300 mb-3 md:mb-4"></i>
+                        <h3 class="text-white font-medium mb-1.5 text-sm md:text-base" data-i18n="grid_1">Generate an Image</h3>
+                        <p class="text-xs text-gray-500 font-mono opacity-80 group-hover:opacity-100 transition-opacity">/imagine a cityscape...</p>
+                    </button>
+
+                    <button onclick="insertPrompt('Write a highly efficient Python boilerplate script that ')" class="group relative flex flex-col text-left p-5 md:p-6 rounded-2xl liquid-glass border border-white/5 hover:border-white/20 transition-all duration-300 overflow-hidden bg-[#050505] hover:bg-[#0a0a0a]">
+                        <i data-lucide="code-2" class="w-5 h-5 text-gray-300 mb-3 md:mb-4"></i>
+                        <h3 class="text-white font-medium mb-1.5 text-sm md:text-base" data-i18n="grid_2">Write a Script</h3>
+                        <p class="text-xs text-gray-500 font-mono opacity-80 group-hover:opacity-100 transition-opacity">Python efficient boilerplate</p>
+                    </button>
+
+                    <button onclick="insertPrompt('Conduct deep analysis and synthesize core data on: ')" class="group relative flex flex-col text-left p-5 md:p-6 rounded-2xl liquid-glass border border-white/5 hover:border-white/20 transition-all duration-300 overflow-hidden bg-[#050505] hover:bg-[#0a0a0a]">
+                        <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-white/5 blur-[40px] rounded-full pointer-events-none group-hover:bg-white/10 transition-colors duration-500"></div>
+                        <i data-lucide="radar" class="w-5 h-5 text-gray-300 mb-3 md:mb-4 relative z-10"></i>
+                        <h3 class="text-white font-medium mb-1.5 text-sm md:text-base relative z-10" data-i18n="grid_3">Deep Data Search</h3>
+                        <p class="text-xs text-gray-500 font-mono opacity-80 group-hover:opacity-100 transition-opacity relative z-10">Analyze & Synthesize</p>
+                    </button>
+
+                    <button onclick="insertPrompt('Using advanced logical frameworks, solve this complex problem: ')" class="group relative flex flex-col text-left p-5 md:p-6 rounded-2xl liquid-glass border border-white/5 hover:border-white/20 transition-all duration-300 overflow-hidden bg-[#050505] hover:bg-[#0a0a0a]">
+                        <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 blur-[40px] rounded-full pointer-events-none group-hover:bg-white/10 transition-colors duration-500"></div>
+                        <i data-lucide="brain" class="w-5 h-5 text-gray-300 mb-3 md:mb-4 relative z-10"></i>
+                        <h3 class="text-white font-medium mb-1.5 text-sm md:text-base relative z-10" data-i18n="grid_4">Deep Thinking</h3>
+                        <p class="text-xs text-gray-500 font-mono opacity-80 group-hover:opacity-100 transition-opacity relative z-10">Solve complex logic</p>
+                    </button>
+
+                </div>
+            </div>
+            
+            <!-- Dynamic messages will be injected here -->
+        </div>
+
+        <!-- Floating Input Pill -->
+        <div class="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 w-[calc(100%-1rem)] md:w-[calc(100%-4rem)] max-w-4xl z-20">
+            
+            <!-- Attachment Preview Area -->
+            <div id="attachmentPreview" class="hidden absolute bottom-full mb-4 left-0 liquid-glass rounded-2xl p-2.5 flex items-center gap-4 border-white/10 shadow-2xl">
+                <div id="previewIcon" class="w-14 h-14 bg-black/80 rounded-xl flex items-center justify-center overflow-hidden shrink-0 border border-white/10">
+                    <i data-lucide="file" class="w-6 h-6 text-gray-300"></i>
+                </div>
+                <div class="flex-1 min-w-0 pr-4">
+                    <p id="previewName" class="text-sm text-white truncate font-medium tracking-wide">filename.jpg</p>
+                    <p id="previewSize" class="text-xs text-gray-500 mt-0.5 font-mono">2.5 MB</p>
+                </div>
+                <button id="removeAttachmentBtn" class="text-gray-400 hover:text-white p-2.5 rounded-full liquid-button mr-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Enhanced Input Container (Now Isolated to Chat Glass) -->
+            <div class="chat-glass rounded-[2rem] p-2.5 md:p-3 transition-all duration-500 focus-within:shadow-[0_30px_60px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.15)] focus-within:bg-white/5 focus-within:border-white/20">
+                
+                <!-- NEW FEATURE: Icon-Only Chat Tools Bar -->
+                <div class="flex gap-3 mb-2 px-4 pt-2 pb-1 overflow-x-auto hide-scrollbar w-full items-center">
+                    <button id="toolCodeMode" class="tool-icon-btn" title="Code Mode (Strict Scripting)"><i data-lucide="code-2" class="w-4 h-4"></i></button>
+                    <button id="toolBrainstorm" class="tool-icon-btn" title="Brainstorm Mode (Lateral Thinking)"><i data-lucide="lightbulb" class="w-4 h-4"></i></button>
+                    <button id="toolTranslate" class="tool-icon-btn" title="Auto-Translate to Target Language"><i data-lucide="languages" class="w-4 h-4"></i></button>
+                    <button id="toolEnhance" class="tool-icon-btn" title="Enhance Prompt (Magic Wand)"><i data-lucide="wand-2" class="w-4 h-4"></i></button>
+                    <button id="toolFactCheck" class="tool-icon-btn" title="Fact Check (Analyze & Verify)"><i data-lucide="shield-check" class="w-4 h-4"></i></button>
+                    <div class="w-[1px] h-4 bg-white/10 mx-1"></div>
+                    <button id="toolClearContext" class="tool-icon-btn" title="Wipe Context (Reset Memory)"><i data-lucide="eraser" class="w-4 h-4 text-red-400"></i></button>
+                </div>
+
+                <div class="flex items-end gap-1 md:gap-2">
+                    <input type="file" id="fileInput" class="hidden" accept="image/*,.pdf,.txt,.md,.csv,.json" />
+                    <button id="attachBtn" class="p-3.5 text-gray-400 hover:text-white rounded-full liquid-button m-1 shrink-0 transition-transform hover:scale-105" title="Attach Data">
+                        <i data-lucide="paperclip" class="w-5 h-5"></i>
+                    </button>
+                    
+                    <textarea id="messageInput" rows="1" class="flex-1 bg-transparent text-white border-0 focus:ring-0 resize-none max-h-40 py-3.5 px-3 tracking-wide text-sm md:text-base font-light placeholder-gray-600 leading-relaxed" data-i18n-placeholder="placeholder" placeholder="Transmit query..."></textarea>
+                    
+                    <button id="sendBtn" class="p-4 m-1 solid-button rounded-full disabled:opacity-20 disabled:cursor-not-allowed shrink-0 flex items-center justify-center">
+                        <i data-lucide="arrow-up" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+            <p class="text-center text-[9px] md:text-[10px] text-gray-600 mt-4 tracking-[0.15em] uppercase font-mono opacity-50" data-i18n="verify">ZXNV // Responses may vary. Verification required.</p>
+        </div>
+    </main>
+
+    <!-- Modal Background overlay -->
+    <div id="modalOverlay" class="hidden fixed inset-0 bg-black/80 backdrop-blur-3xl z-40 opacity-0 transition-opacity duration-500"></div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+        <div class="liquid-glass border border-white/10 rounded-[2.5rem] w-full max-w-lg shadow-[0_40px_80px_rgba(0,0,0,0.9)] transform scale-95 opacity-0 transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) pointer-events-auto" id="settingsContent">
+            
+            <div class="p-8 border-b border-white/5 flex items-center justify-between">
+                <h2 class="text-lg md:text-xl font-medium tracking-[0.15em] uppercase flex items-center gap-3 text-white">
+                    <i data-lucide="cpu" class="w-5 h-5 opacity-70"></i>
+                    <span data-i18n="params">Parameters</span>
+                </h2>
+                <button id="closeSettingsBtn" class="text-gray-400 hover:text-white liquid-button p-2.5 rounded-full">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 md:p-8 space-y-6 md:space-y-8 max-h-[70vh] overflow-y-auto hide-scrollbar">
+                
+                <!-- NEW FEATURE: Global Language Selector -->
+                <div>
+                    <label class="block text-[10px] md:text-xs font-mono uppercase text-gray-500 mb-3 tracking-widest flex items-center gap-2" data-i18n="lbl_lang"><i data-lucide="globe" class="w-3 h-3"></i> Language</label>
+                    <select id="languageSelect" class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-white/30 text-sm appearance-none liquid-glass">
+                        <option value="en" class="bg-black">English (EN)</option>
+                        <option value="es" class="bg-black">Spanish (ES)</option>
+                        <option value="fr" class="bg-black">French (FR)</option>
+                        <option value="de" class="bg-black">German (DE)</option>
+                        <option value="it" class="bg-black">Italian (IT)</option>
+                        <option value="pt" class="bg-black">Portuguese (PT)</option>
+                        <option value="ru" class="bg-black">Russian (RU)</option>
+                        <option value="zh" class="bg-black">Chinese (ZH)</option>
+                        <option value="ja" class="bg-black">Japanese (JA)</option>
+                        <option value="ko" class="bg-black">Korean (KO)</option>
+                        <option value="ar" class="bg-black">Arabic (AR)</option>
+                        <option value="hi" class="bg-black">Hindi (HI)</option>
+                        <option value="id" class="bg-black">Indonesian (ID)</option>
+                        <option value="tr" class="bg-black">Turkish (TR)</option>
+                        <option value="nl" class="bg-black">Dutch (NL)</option>
+                        <option value="pl" class="bg-black">Polish (PL)</option>
+                        <option value="sv" class="bg-black">Swedish (SV)</option>
+                        <option value="vi" class="bg-black">Vietnamese (VI)</option>
+                        <option value="th" class="bg-black">Thai (TH)</option>
+                        <option value="uk" class="bg-black">Ukrainian (UK)</option>
+                        <option value="ro" class="bg-black">Romanian (RO)</option>
+                        <option value="cs" class="bg-black">Czech (CS)</option>
+                        <option value="el" class="bg-black">Greek (EL)</option>
+                        <option value="hu" class="bg-black">Hungarian (HU)</option>
+                        <option value="da" class="bg-black">Danish (DA)</option>
+                        <option value="fi" class="bg-black">Finnish (FI)</option>
+                        <option value="no" class="bg-black">Norwegian (NO)</option>
+                        <option value="ms" class="bg-black">Malay (MS)</option>
+                        <option value="tl" class="bg-black">Tagalog (TL)</option>
+                        <option value="he" class="bg-black">Hebrew (HE)</option>
+                    </select>
+                </div>
+
+                <!-- NEW FEATURE: Global UI Transparency Control -->
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="block text-[10px] md:text-xs font-mono uppercase text-gray-500 tracking-widest flex items-center gap-2" data-i18n="lbl_trans"><i data-lucide="eye" class="w-3 h-3"></i> Transparency</label>
+                        <span id="transparencyValueDisplay" class="text-[9px] text-gray-400 font-mono uppercase tracking-widest">Glass (15%)</span>
+                    </div>
+                    <input type="range" id="transparencySlider" min="0" max="100" value="15" class="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer outline-none">
+                    <div class="flex justify-between text-[8px] text-gray-600 font-mono uppercase mt-2 tracking-widest">
+                        <span>Clear</span>
+                        <span>Opaque</span>
+                    </div>
+                </div>
+
+                <!-- NEW FEATURE: Typography Control -->
+                <div>
+                    <label class="block text-[10px] md:text-xs font-mono uppercase text-gray-500 mb-3 tracking-widest flex items-center gap-2" data-i18n="lbl_font"><i data-lucide="type" class="w-3 h-3"></i> Typography</label>
+                    <select id="fontFamilySelect" class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-white/30 text-sm appearance-none liquid-glass">
+                        <option value="'Inter', sans-serif" class="bg-black">Inter (Modern Sans)</option>
+                        <option value="'JetBrains Mono', monospace" class="bg-black">JetBrains (Hacker Mono)</option>
+                        <option value="Georgia, serif" class="bg-black">Georgia (Academic Serif)</option>
+                    </select>
+                </div>
+
+                <!-- NEW FEATURE: Context Memory Slider -->
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="block text-[10px] md:text-xs font-mono uppercase text-gray-500 tracking-widest flex items-center gap-2" data-i18n="lbl_memory"><i data-lucide="brain-circuit" class="w-3 h-3"></i> Context Memory</label>
+                        <span id="memoryValueDisplay" class="text-[9px] text-gray-400 font-mono uppercase tracking-widest">10 Msgs</span>
+                    </div>
+                    <input type="range" id="memorySlider" min="2" max="50" step="2" value="10" class="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer outline-none">
+                    <div class="flex justify-between text-[8px] text-gray-600 font-mono uppercase mt-2 tracking-widest">
+                        <span>Amnesia</span>
+                        <span>Eidetic</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] md:text-xs font-mono uppercase text-gray-500 mb-3 tracking-widest" data-i18n="lbl_model">Neural Model</label>
+                    <select id="modelSelect" class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-white/30 text-sm appearance-none liquid-glass">
+                        <option value="openai/gpt-4o-mini" class="bg-black">GPT-4o Mini (Vision + Speed)</option>
+                        <option value="google/gemini-2.5-pro" class="bg-black">Gemini 2.5 Pro (Advanced)</option>
+                        <option value="anthropic/claude-3-haiku" class="bg-black">Claude 3 Haiku (Fast)</option>
+                        <option value="meta-llama/llama-3-8b-instruct" class="bg-black">Llama 3 8B (Open Source)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="block text-[10px] md:text-xs font-mono uppercase text-gray-500 tracking-widest flex items-center gap-2" data-i18n="lbl_temp"><i data-lucide="flame" class="w-3 h-3"></i> Creativity (Temp)</label>
+                        <span id="tempValueDisplay" class="text-[9px] text-gray-400 font-mono uppercase tracking-widest">Balanced (0.7)</span>
+                    </div>
+                    <input type="range" id="temperatureSlider" min="0" max="2" step="0.1" value="0.7" class="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer outline-none">
+                    <div class="flex justify-between text-[8px] text-gray-600 font-mono uppercase mt-2 tracking-widest">
+                        <span>Precise</span>
+                        <span>Abstract</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div>
+                        <label class="block text-[10px] md:text-xs font-mono uppercase text-gray-500 mb-3 tracking-widest" data-i18n="lbl_scale">Scale</label>
+                        <select id="fontSizeSelect" class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm appearance-none liquid-glass focus:border-white/30 focus:outline-none">
+                            <option value="text-sm" class="bg-black">Compact</option>
+                            <option value="text-base" class="bg-black">Standard</option>
+                            <option value="text-lg" class="bg-black">Large</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[10px] md:text-xs font-mono uppercase text-gray-500 mb-3 tracking-widest" data-i18n="lbl_audio">Haptics/Audio</label>
+                        <button id="audioToggleBtn" class="w-full liquid-glass border border-white/10 rounded-2xl px-5 py-4 flex items-center justify-between transition-colors text-white hover:bg-white/5">
+                            <span class="text-sm font-light" id="audioToggleText">Enabled</span>
+                            <span id="audioIconContainer"><i data-lucide="volume-2" class="w-4 h-4 text-white"></i></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="block text-[10px] md:text-xs font-mono uppercase text-gray-500 tracking-widest" data-i18n="lbl_visual">Visual Mode</label>
+                        </div>
+                        <button id="performanceToggleBtn" class="w-full liquid-glass border border-white/10 rounded-2xl px-5 py-4 flex items-center justify-between transition-colors text-white hover:bg-white/5">
+                            <span class="text-sm font-light" id="performanceToggleText">Ultra</span>
+                            <span id="performanceIconContainer"><i data-lucide="sparkles" class="w-4 h-4 text-white"></i></span>
+                        </button>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="block text-[10px] md:text-xs font-mono uppercase text-gray-500 tracking-widest" data-i18n="lbl_aes">Aesthetic</label>
+                        </div>
+                        <button id="voidToggleBtn" class="w-full liquid-glass border border-white/10 rounded-2xl px-5 py-4 flex items-center justify-between transition-colors text-white hover:bg-white/5">
+                            <span class="text-sm font-light" id="voidToggleText">Standard</span>
+                            <span id="voidIconContainer"><i data-lucide="moon" class="w-4 h-4 text-gray-500"></i></span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="block text-[10px] md:text-xs font-mono uppercase text-gray-500 tracking-widest" data-i18n="lbl_vitals">Sys Vitals</label>
+                    </div>
+                    <button id="vitalsToggleBtn" class="w-full liquid-glass border border-white/10 rounded-2xl px-5 py-4 flex items-center justify-between transition-colors text-white hover:bg-white/5">
+                        <span class="text-sm font-light" id="vitalsToggleText">Hidden</span>
+                        <span id="vitalsIconContainer"><i data-lucide="activity" class="w-4 h-4 text-gray-500"></i></span>
+                    </button>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="block text-[10px] md:text-xs font-mono uppercase text-gray-500 tracking-widest" data-i18n="lbl_core">Core Directive</label>
+                        <select id="promptPreset" class="bg-transparent text-[9px] md:text-[10px] text-gray-500 hover:text-white focus:outline-none cursor-pointer appearance-none text-right font-mono uppercase tracking-widest">
+                            <option value="" disabled selected>Load Preset</option>
+                            <option value="You are ZXNV, a highly capable, sleek, and minimalist AI. Provide clear, direct, and well-formatted answers." class="bg-black text-left">Default</option>
+                            <option value="Respond only with extreme brevity. Be cold, logical, and factual. No pleasantries." class="bg-black text-left">Strict Logic</option>
+                            <option value="You are a senior systems engineer. Provide comprehensive technical analysis and code blocks." class="bg-black text-left">Engineering</option>
+                        </select>
+                    </div>
+                    <textarea id="systemPromptInput" rows="4" class="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:border-white/30 text-sm liquid-glass resize-none font-light leading-relaxed" placeholder="Define core behavior..."></textarea>
+                </div>
+            </div>
+            
+            <div class="p-6 border-t border-white/5 bg-black/40 flex justify-end gap-4 rounded-b-[2.5rem]">
+                <button id="cancelSettingsBtn" class="px-6 py-3 text-sm font-medium text-gray-400 hover:text-white transition-colors rounded-full hover:bg-white/5" data-i18n="discard">Discard</button>
+                <button id="saveSettingsBtn" class="px-8 py-3 solid-button text-sm font-semibold rounded-full uppercase tracking-wider" data-i18n="apply">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="confirmModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 pointer-events-none">
+        <div class="liquid-glass border border-white/10 rounded-[2.5rem] w-full max-w-sm shadow-[0_40px_80px_rgba(0,0,0,0.9)] transform scale-95 opacity-0 transition-all duration-300 pointer-events-auto flex flex-col items-center p-8 text-center" id="confirmContent">
+            <div class="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-6 text-red-500 border border-red-500/20 shadow-[0_0_30px_rgba(239,68,68,0.2)]">
+                <i data-lucide="trash-2" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-white text-xl font-medium mb-3 tracking-wide" data-i18n="erase_title">Erase Sequence?</h3>
+            <p class="text-gray-400 text-sm font-light mb-8 leading-relaxed" data-i18n="erase_desc">This action cannot be reversed. All linked data will be permanently purged.</p>
+            <div class="flex gap-4 w-full">
+                <button id="cancelConfirmBtn" class="flex-1 py-3.5 rounded-full text-sm font-medium text-white hover:bg-white/5 transition-colors border border-white/10" data-i18n="cancel">Cancel</button>
+                <button id="acceptConfirmBtn" class="flex-1 py-3.5 rounded-full text-sm font-medium text-white bg-red-600/80 hover:bg-red-500 transition-colors shadow-[0_0_20px_rgba(239,68,68,0.4)]" data-i18n="purge">Purge Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Next-Level Toast -->
+    <div id="toast" class="fixed top-6 md:top-8 right-1/2 translate-x-1/2 md:translate-x-0 md:right-8 liquid-glass border border-white/10 text-white pl-3 pr-6 py-3 rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.8)] transform -translate-y-[200%] opacity-0 transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-[100] flex items-center gap-3 whitespace-nowrap">
+        <div id="toastIconContainer" class="bg-white/10 p-2 rounded-full shadow-inner text-white flex items-center justify-center">
+            <i data-lucide="info" class="w-4 h-4"></i>
+        </div>
+        <span id="toastMessage" class="text-sm font-medium tracking-wide">System updated</span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        lucide.createIcons();
+
+        // --- GLOBAL i18n DICTIONARY (Fully Expanded UI Coverage) ---
+        const i18nDict = {
+            en: { init: "Initialize", params: "Parameters", workspace: "ZXNV Workspace", subtitle: "What would you like to build today?", placeholder: "Transmit query...", discard: "Discard", apply: "Apply", new_chat: "New Interaction", verify: "ZXNV // Responses may vary. Verification required.", grid_1: "Generate an Image", grid_2: "Write a Script", grid_3: "Deep Data Search", grid_4: "Deep Thinking", lbl_lang: "Language", lbl_trans: "Transparency", lbl_font: "Typography", lbl_memory: "Context Memory", lbl_model: "Neural Model", lbl_temp: "Creativity (Temp)", lbl_scale: "Scale", lbl_audio: "Haptics/Audio", lbl_visual: "Visual Mode", lbl_aes: "Aesthetic", lbl_vitals: "Sys Vitals", lbl_core: "Core Directive", erase_title: "Erase Sequence?", erase_desc: "This action cannot be reversed. All linked data will be permanently purged.", cancel: "Cancel", purge: "Purge Data" },
+            es: { init: "Inicializar", params: "Parámetros", workspace: "Espacio ZXNV", subtitle: "¿Qué te gustaría construir hoy?", placeholder: "Transmitir consulta...", discard: "Descartar", apply: "Aplicar", new_chat: "Nueva Interacción", verify: "ZXNV // Las respuestas pueden variar.", grid_1: "Generar una Imagen", grid_2: "Escribir un Script", grid_3: "Búsqueda Profunda", grid_4: "Pensamiento Profundo", lbl_lang: "Idioma", lbl_trans: "Transparencia", lbl_model: "Modelo Neuronal", lbl_temp: "Creatividad", lbl_scale: "Escala", lbl_audio: "Audio/Háptica", lbl_visual: "Modo Visual", lbl_aes: "Estética", lbl_vitals: "Signos Vitales", lbl_core: "Directiva Central", erase_title: "¿Borrar Secuencia?", erase_desc: "Esta acción no se puede deshacer. Los datos vinculados se purgarán.", cancel: "Cancelar", purge: "Purgar Datos" },
+            fr: { init: "Initialiser", params: "Paramètres", workspace: "Espace ZXNV", subtitle: "Que souhaitez-vous créer aujourd'hui ?", placeholder: "Transmettre requête...", discard: "Annuler", apply: "Appliquer", new_chat: "Nouvelle Interaction", verify: "ZXNV // Les réponses peuvent varier.", grid_1: "Générer une Image", grid_2: "Écrire un Script", grid_3: "Recherche Profonde", grid_4: "Pensée Profonde", lbl_lang: "Langue", lbl_trans: "Transparence", lbl_model: "Modèle Neuronal", lbl_temp: "Créativité", lbl_scale: "Échelle", lbl_audio: "Audio/Haptique", lbl_visual: "Mode Visuel", lbl_aes: "Esthétique", lbl_vitals: "Signes Vitaux", lbl_core: "Directive", erase_title: "Effacer Séquence?", erase_desc: "Action irréversible. Les données seront purgées.", cancel: "Annuler", purge: "Purger Données" },
+            de: { init: "Initialisieren", params: "Parameter", workspace: "ZXNV Arbeitsbereich", subtitle: "Was möchten Sie heute erstellen?", placeholder: "Anfrage übertragen...", discard: "Verwerfen", apply: "Anwenden", new_chat: "Neue Interaktion", verify: "ZXNV // Antworten können variieren.", grid_1: "Bild Generieren", grid_2: "Skript Schreiben", grid_3: "Tiefensuche", grid_4: "Tiefes Denken", lbl_lang: "Sprache", lbl_trans: "Transparenz", lbl_model: "Neuronales Modell", lbl_temp: "Kreativität", lbl_scale: "Skalierung", lbl_audio: "Audio/Haptik", lbl_visual: "Visueller Modus", lbl_aes: "Ästhetik", lbl_vitals: "Vitalwerte", lbl_core: "Direktive", erase_title: "Sequenz löschen?", erase_desc: "Aktion kann nicht rückgängig gemacht werden.", cancel: "Abbrechen", purge: "Daten löschen" },
+            it: { init: "Inizializza", params: "Parametri", workspace: "Spazio ZXNV", subtitle: "Cosa vorresti costruire oggi?", placeholder: "Trasmetti query...", discard: "Scarta", apply: "Applica", new_chat: "Nuova Interazione", verify: "ZXNV // Le risposte possono variare.", grid_1: "Genera un'Immagine", grid_2: "Scrivi uno Script", grid_3: "Ricerca Profonda", grid_4: "Pensiero Profondo", lbl_lang: "Lingua", lbl_trans: "Trasparenza", lbl_model: "Modello Neurale", lbl_temp: "Creatività", lbl_scale: "Scala", lbl_audio: "Audio/Attica", lbl_visual: "Modo Visivo", lbl_aes: "Estetica", lbl_vitals: "Segni Vitali", lbl_core: "Direttiva", erase_title: "Cancellare Sequenza?", erase_desc: "Azione irreversibile. Dati purgati definitivamente.", cancel: "Annulla", purge: "Purga Dati" },
+            pt: { init: "Inicializar", params: "Parâmetros", workspace: "Espaço ZXNV", subtitle: "O que você gostaria de construir hoje?", placeholder: "Transmitir consulta...", discard: "Descartar", apply: "Aplicar", new_chat: "Nova Interação", verify: "ZXNV // As respostas podem variar.", grid_1: "Gerar Imagem", grid_2: "Escrever Script", grid_3: "Busca Profunda", grid_4: "Pensamento Profundo", lbl_lang: "Idioma", lbl_trans: "Transparência", lbl_model: "Modelo Neural", lbl_temp: "Criatividade", lbl_scale: "Escala", lbl_audio: "Áudio", lbl_visual: "Modo Visual", lbl_aes: "Estética", lbl_vitals: "Sinais Vitais", lbl_core: "Diretriz", erase_title: "Apagar Sequência?", erase_desc: "Ação irreversível. Dados serão perdidos.", cancel: "Cancelar", purge: "Purgar Dados" },
+            ru: { init: "Инициализация", params: "Параметры", workspace: "Пространство ZXNV", subtitle: "Что бы вы хотели создать сегодня?", placeholder: "Передача запроса...", discard: "Отменить", apply: "Применить", new_chat: "Новое Взаимодействие", verify: "ZXNV // Ответы могут отличаться.", grid_1: "Сгенерировать Изображение", grid_2: "Написать Скрипт", grid_3: "Глубокий Поиск", grid_4: "Глубокое Мышление", lbl_lang: "Язык", lbl_trans: "Прозрачность", lbl_model: "Нейромодель", lbl_temp: "Креативность", lbl_scale: "Масштаб", lbl_audio: "Аудио", lbl_visual: "Визуал", lbl_aes: "Эстетика", lbl_vitals: "Показатели", lbl_core: "Директива", erase_title: "Удалить?", erase_desc: "Действие необратимо.", cancel: "Отмена", purge: "Очистить" },
+            zh: { init: "初始化", params: "参数", workspace: "ZXNV 工作区", subtitle: "您今天想构建什么？", placeholder: "传输查询...", discard: "丢弃", apply: "应用", new_chat: "新交互", verify: "ZXNV // 回复可能有所不同。", grid_1: "生成图像", grid_2: "编写脚本", grid_3: "深度搜索", grid_4: "深度思考", lbl_lang: "语言", lbl_trans: "透明度", lbl_model: "神经模型", lbl_temp: "创造力", lbl_scale: "缩放", lbl_audio: "音频", lbl_visual: "视觉模式", lbl_aes: "美学", lbl_vitals: "系统体征", lbl_core: "核心指令", erase_title: "擦除序列?", erase_desc: "此操作不可逆。数据将被永久清除。", cancel: "取消", purge: "清除数据" },
+            ja: { init: "初期化", params: "パラメーター", workspace: "ZXNV ワークスペース", subtitle: "今日は何を作成しますか？", placeholder: "クエリを送信...", discard: "破棄", apply: "適用", new_chat: "新しい相互作用", verify: "ZXNV // 回答は異なる場合があります。", grid_1: "画像を生成", grid_2: "スクリプトを書く", grid_3: "深層検索", grid_4: "深い思考", lbl_lang: "言語", lbl_trans: "透明度", lbl_model: "神経モデル", lbl_temp: "創造性", lbl_scale: "スケール", lbl_audio: "オーディオ", lbl_visual: "視覚モード", lbl_aes: "美学", lbl_vitals: "バイタル", lbl_core: "コア指令", erase_title: "シーケンスを消去?", erase_desc: "元に戻せません。データは完全に削除されます。", cancel: "キャンセル", purge: "パージ" },
+            ko: { init: "초기화", params: "매개변수", workspace: "ZXNV 작업 공간", subtitle: "오늘은 무엇을 만들고 싶으신가요?", placeholder: "쿼리 전송...", discard: "취소", apply: "적용", new_chat: "새로운 상호작용", verify: "ZXNV // 답변은 다를 수 있습니다.", grid_1: "이미지 생성", grid_2: "스크립트 작성", grid_3: "심층 데이터 검색", grid_4: "심층 사고", lbl_lang: "언어", lbl_trans: "투명도", lbl_model: "신경 모델", lbl_temp: "창의성", lbl_scale: "비율", lbl_audio: "오디오", lbl_visual: "시각적 모드", lbl_aes: "미학", lbl_vitals: "생체 신호", lbl_core: "핵심 지시문", erase_title: "시퀀스 지우기?", erase_desc: "되돌릴 수 없습니다. 데이터가 영구적으로 삭제됩니다.", cancel: "취소", purge: "데이터 제거" },
+            ar: { init: "تهيئة", params: "المعلمات", workspace: "مساحة ZXNV", subtitle: "ماذا تود أن تبني اليوم؟", placeholder: "إرسال استعلام...", discard: "تجاهل", apply: "تطبيق", new_chat: "تفاعل جديد", verify: "ZXNV // قد تختلف الردود.", grid_1: "توليد صورة", grid_2: "كتابة سكريبت", grid_3: "بحث عميق", grid_4: "تفكير عميق", lbl_lang: "اللغة", lbl_trans: "الشفافية", lbl_model: "النموذج", lbl_temp: "الإبداع", lbl_scale: "المقياس", lbl_audio: "الصوت", lbl_visual: "الوضع المرئي", lbl_aes: "جماليات", lbl_vitals: "المؤشرات", lbl_core: "التوجيه الأساسي", erase_title: "مسح التسلسل؟", erase_desc: "لا يمكن التراجع. سيتم حذف البيانات.", cancel: "إلغاء", purge: "مسح البيانات" },
+            hi: { init: "प्रारंभ करें", params: "मापदंड", workspace: "ZXNV कार्यस्थान", subtitle: "आज आप क्या बनाना चाहेंगे?", placeholder: "प्रश्न भेजें...", discard: "रद्द करें", apply: "लागू करें", new_chat: "नई बातचीत", verify: "ZXNV // प्रतिक्रियाएं भिन्न हो सकती हैं।", grid_1: "चित्र बनाएँ", grid_2: "स्क्रिप्ट लिखें", grid_3: "गहरा डेटा खोज", grid_4: "गहरी सोच", lbl_lang: "भाषा", lbl_trans: "पारदर्शिता", lbl_model: "न्यूरल मॉडल", lbl_temp: "रचनात्मकता", lbl_scale: "स्केल", lbl_audio: "ऑडियो", lbl_visual: "दृश्य मोड", lbl_aes: "सौंदर्यशास्त्र", lbl_vitals: "महत्वपूर्ण संकेतक", lbl_core: "निर्देश", erase_title: "अनुक्रम मिटाएं?", erase_desc: "इस कार्रवाई को उलटा नहीं किया जा सकता।", cancel: "रद्द करें", purge: "डेटा साफ़ करें" },
+            id: { init: "Inisialisasi", params: "Parameter", workspace: "Ruang ZXNV", subtitle: "Apa yang ingin Anda bangun hari ini?", placeholder: "Kirim kueri...", discard: "Batal", apply: "Terapkan", new_chat: "Interaksi Baru", verify: "ZXNV // Respons dapat bervariasi.", grid_1: "Hasilkan Gambar", grid_2: "Tulis Skrip", grid_3: "Pencarian Dalam", grid_4: "Pemikiran Mendalam", lbl_lang: "Bahasa", lbl_trans: "Transparansi", lbl_model: "Model Neural", lbl_temp: "Kreativitas", lbl_scale: "Skala", lbl_audio: "Audio/Sentuhan", lbl_visual: "Mode Visual", lbl_aes: "Estetika", lbl_vitals: "Sistem Vital", lbl_core: "Direktif Inti", erase_title: "Hapus Urutan?", erase_desc: "Tindakan ini permanen. Semua data akan dihapus.", cancel: "Batal", purge: "Hapus Data" },
+            tr: { init: "Başlat", params: "Parametreler", workspace: "ZXNV Çalışma Alanı", subtitle: "Bugün ne inşa etmek istersiniz?", placeholder: "Sorguyu ilet...", discard: "İptal", apply: "Uygula", new_chat: "Yeni Etkileşim", verify: "ZXNV // Yanıtlar değişebilir.", grid_1: "Görüntü Oluştur", grid_2: "Betik Yaz", grid_3: "Derin Veri Arama", grid_4: "Derin Düşünce", lbl_lang: "Dil", lbl_trans: "Şeffaflık", lbl_model: "Sinir Modeli", lbl_temp: "Yaratıcılık", lbl_scale: "Ölçek", lbl_audio: "Ses", lbl_visual: "Görsel Mod", lbl_aes: "Estetik", lbl_vitals: "Sistem Hayati", lbl_core: "Temel Yönerge", erase_title: "Diziyi Sil?", erase_desc: "Geri alınamaz. Veriler kalıcı olarak silinir.", cancel: "İptal", purge: "Verileri Temizle" },
+            nl: { init: "Initialiseren", params: "Parameters", workspace: "ZXNV Werkruimte", subtitle: "Wat wil je vandaag bouwen?", placeholder: "Query verzenden...", discard: "Annuleren", apply: "Toepassen", new_chat: "Nieuwe Interactie", verify: "ZXNV // Reacties kunnen variëren.", grid_1: "Afbeelding Genereren", grid_2: "Script Schrijven", grid_3: "Diepe Zoekopdracht", grid_4: "Diep Nadenken", lbl_lang: "Taal", lbl_trans: "Transparantie", lbl_model: "Neuraal Model", lbl_temp: "Creativiteit", lbl_scale: "Schaal", lbl_audio: "Audio", lbl_visual: "Visuele Modus", lbl_aes: "Esthetiek", lbl_vitals: "Systeem Vitale", lbl_core: "Kernrichtlijn", erase_title: "Reeks Wissen?", erase_desc: "Deze actie is onomkeerbaar.", cancel: "Annuleren", purge: "Gegevens Wissen" },
+            pl: { init: "Inicjalizuj", params: "Parametry", workspace: "Przestrzeń ZXNV", subtitle: "Co chciałbyś dzisiaj zbudować?", placeholder: "Prześlij zapytanie...", discard: "Odrzuć", apply: "Zastosuj", new_chat: "Nowa Interakcja", verify: "ZXNV // Odpowiedzi mogą się różnić.", grid_1: "Generuj Obraz", grid_2: "Napisz Skrypt", grid_3: "Głębokie Szukanie", grid_4: "Głębokie Myślenie", lbl_lang: "Język", lbl_trans: "Przezroczystość", lbl_model: "Model", lbl_temp: "Kreatywność", lbl_scale: "Skala", lbl_audio: "Dźwięk", lbl_visual: "Tryb Wizualny", lbl_aes: "Estetyka", lbl_vitals: "Funkcje Życiowe", lbl_core: "Dyrektywa", erase_title: "Usunąć Sekwencję?", erase_desc: "Działanie nieodwracalne.", cancel: "Anuluj", purge: "Usuń Dane" },
+            sv: { init: "Initiera", params: "Parametrar", workspace: "ZXNV Arbetsyta", subtitle: "Vad vill du bygga idag?", placeholder: "Överför fråga...", discard: "Kassera", apply: "Verkställ", new_chat: "Ny Interaktion", verify: "ZXNV // Svar kan variera.", grid_1: "Generera Bild", grid_2: "Skriv ett Skript", grid_3: "Djup Sökning", grid_4: "Djupt Tänkande", lbl_lang: "Språk", lbl_trans: "Transparens", lbl_model: "Neural Modell", lbl_temp: "Kreativitet", lbl_scale: "Skala", lbl_audio: "Ljud", lbl_visual: "Visuellt Läge", lbl_aes: "Estetik", lbl_vitals: "Vitala System", lbl_core: "Direktiv", erase_title: "Radera Sekvens?", erase_desc: "Kan inte ångras.", cancel: "Avbryt", purge: "Rensa Data" },
+            vi: { init: "Khởi tạo", params: "Thông số", workspace: "Không gian ZXNV", subtitle: "Bạn muốn xây dựng gì hôm nay?", placeholder: "Truyền truy vấn...", discard: "Hủy", apply: "Áp dụng", new_chat: "Tương tác mới", verify: "ZXNV // Phản hồi có thể khác nhau.", grid_1: "Tạo Hình ảnh", grid_2: "Viết Kịch bản", grid_3: "Tìm kiếm Sâu", grid_4: "Tư duy Sâu", lbl_lang: "Ngôn ngữ", lbl_trans: "Độ trong suốt", lbl_model: "Mô hình Neural", lbl_temp: "Sáng tạo", lbl_scale: "Tỷ lệ", lbl_audio: "Âm thanh", lbl_visual: "Giao diện", lbl_aes: "Thẩm mỹ", lbl_vitals: "Sinh tồn", lbl_core: "Chỉ thị cốt lõi", erase_title: "Xóa Trình tự?", erase_desc: "Không thể hoàn tác.", cancel: "Hủy", purge: "Xóa Dữ liệu" },
+            th: { init: "เริ่มต้น", params: "พารามิเตอร์", workspace: "พื้นที่ ZXNV", subtitle: "วันนี้คุณต้องการสร้างอะไร?", placeholder: "ส่งคำถาม...", discard: "ยกเลิก", apply: "นำไปใช้", new_chat: "การโต้ตอบใหม่", verify: "ZXNV // การตอบสนองอาจแตกต่างกัน", grid_1: "สร้างภาพ", grid_2: "เขียนสคริปต์", grid_3: "ค้นหาเชิงลึก", grid_4: "ความคิดเชิงลึก", lbl_lang: "ภาษา", lbl_trans: "ความโปร่งใส", lbl_model: "โมเดล", lbl_temp: "ความคิดสร้างสรรค์", lbl_scale: "ขนาด", lbl_audio: "เสียง", lbl_visual: "โหมดภาพ", lbl_aes: "สุนทรียภาพ", lbl_vitals: "สัญญาณชีพ", lbl_core: "คำสั่งหลัก", erase_title: "ลบลำดับ?", erase_desc: "ไม่สามารถยกเลิกได้", cancel: "ยกเลิก", purge: "ล้างข้อมูล" },
+            uk: { init: "Ініціалізація", params: "Параметри", workspace: "Простір ZXNV", subtitle: "Що б ви хотіли створити сьогодні?", placeholder: "Передача запиту...", discard: "Скасувати", apply: "Застосувати", new_chat: "Нова Взаємодія", verify: "ZXNV // Відповіді можуть відрізнятися.", grid_1: "Згенерувати Зображення", grid_2: "Написати Скрипт", grid_3: "Глибокий Пошук", grid_4: "Глибоке Мислення", lbl_lang: "Мова", lbl_trans: "Прозорість", lbl_model: "Модель", lbl_temp: "Креативність", lbl_scale: "Масштаб", lbl_audio: "Аудіо", lbl_visual: "Візуальний режим", lbl_aes: "Естетика", lbl_vitals: "Показники", lbl_core: "Директива", erase_title: "Видалити?", erase_desc: "Дія незворотна.", cancel: "Скасувати", purge: "Очистити" },
+            ro: { init: "Inițializează", params: "Parametri", workspace: "Spațiu ZXNV", subtitle: "Ce dorești să construiești astăzi?", placeholder: "Transmite interogare...", discard: "Renunță", apply: "Aplică", new_chat: "Nouă Interacțiune", verify: "ZXNV // Răspunsurile pot varia.", grid_1: "Generează Imagine", grid_2: "Scrie un Script", grid_3: "Căutare Profundă", grid_4: "Gândire Profundă", lbl_lang: "Limbă", lbl_trans: "Transparență", lbl_model: "Model Neural", lbl_temp: "Creativitate", lbl_scale: "Scară", lbl_audio: "Audio", lbl_visual: "Mod Vizual", lbl_aes: "Estetică", lbl_vitals: "Semne Vitale", lbl_core: "Directivă", erase_title: "Șterge Secvența?", erase_desc: "Acțiune ireversibilă.", cancel: "Anulează", purge: "Elimină Date" },
+            cs: { init: "Inicializovat", params: "Parametry", workspace: "Pracovní prostor ZXNV", subtitle: "Co byste chtěli dnes postavit?", placeholder: "Přenést dotaz...", discard: "Zrušit", apply: "Použít", new_chat: "Nová Interakce", verify: "ZXNV // Odpovědi se mohou lišit.", grid_1: "Generovat Obrázek", grid_2: "Napsat Skript", grid_3: "Hluboké Hledání", grid_4: "Hluboké Myšlení", lbl_lang: "Jazyk", lbl_trans: "Průhlednost", lbl_model: "Model", lbl_temp: "Kreativita", lbl_scale: "Měřítko", lbl_audio: "Audio", lbl_visual: "Vizuál", lbl_aes: "Estetika", lbl_vitals: "Vitální funkce", lbl_core: "Směrnice", erase_title: "Smazat sekvenci?", erase_desc: "Nelze vrátit zpět.", cancel: "Zrušit", purge: "Vymazat" },
+            el: { init: "Εκκίνηση", params: "Παράμετροι", workspace: "Χώρος ZXNV", subtitle: "Τι θα θέλατε να δημιουργήσετε σήμερα;", placeholder: "Μετάδοση ερωτήματος...", discard: "Απόρριψη", apply: "Εφαρμογή", new_chat: "Νέα Αλληλεπίδραση", verify: "ZXNV // Οι απαντήσεις μπορεί να διαφέρουν.", grid_1: "Δημιουργία Εικόνας", grid_2: "Συγγραφή Κώδικα", grid_3: "Βαθιά Αναζήτηση", grid_4: "Βαθιά Σκέψη", lbl_lang: "Γλώσσα", lbl_trans: "Διαφάνεια", lbl_model: "Μοντέλο", lbl_temp: "Δημιουργικότητα", lbl_scale: "Κλίμακα", lbl_audio: "Ήχος", lbl_visual: "Οπτική", lbl_aes: "Αισθητική", lbl_vitals: "Ζωτικά Σημεία", lbl_core: "Οδηγία", erase_title: "Διαγραφή;", erase_desc: "Μη αναστρέψιμη ενέργεια.", cancel: "Ακύρωση", purge: "Εκκαθάριση" },
+            hu: { init: "Inicializálás", params: "Paraméterek", workspace: "ZXNV Munkaterület", subtitle: "Mit szeretne ma építeni?", placeholder: "Kérdés továbbítása...", discard: "Elvetés", apply: "Alkalmaz", new_chat: "Új Interakció", verify: "ZXNV // A válaszok eltérhetnek.", grid_1: "Kép Generálása", grid_2: "Szkript Írása", grid_3: "Mély Keresés", grid_4: "Mély Gondolkodás", lbl_lang: "Nyelv", lbl_trans: "Átlátszóság", lbl_model: "Modell", lbl_temp: "Kreativitás", lbl_scale: "Lépték", lbl_audio: "Hang", lbl_visual: "Vizuális", lbl_aes: "Esztétika", lbl_vitals: "Életjelek", lbl_core: "Irányelv", erase_title: "Törlés?", erase_desc: "Visszavonhatatlan.", cancel: "Mégse", purge: "Adatok törlése" },
+            da: { init: "Initialiser", params: "Parametre", workspace: "ZXNV Arbejdsrum", subtitle: "Hvad vil du bygge i dag?", placeholder: "Overfør forespørgsel...", discard: "Kassér", apply: "Anvend", new_chat: "Ny Interaktion", verify: "ZXNV // Svar kan variere.", grid_1: "Generer Billede", grid_2: "Skriv et Script", grid_3: "Dyb Søgning", grid_4: "Dyb Tænkning", lbl_lang: "Sprog", lbl_trans: "Gennemsigtighed", lbl_model: "Model", lbl_temp: "Kreativitet", lbl_scale: "Skala", lbl_audio: "Lyd", lbl_visual: "Visuel", lbl_aes: "Æstetik", lbl_vitals: "Vitaler", lbl_core: "Direktiv", erase_title: "Slet Sekvens?", erase_desc: "Kan ikke fortrydes.", cancel: "Annuller", purge: "Ryd Data" },
+            fi: { init: "Alusta", params: "Parametrit", workspace: "ZXNV Työtila", subtitle: "Mitä haluaisit rakentaa tänään?", placeholder: "Lähetä kysely...", discard: "Hylkää", apply: "Käytä", new_chat: "Uusi Vuorovaikutus", verify: "ZXNV // Vastaukset voivat vaihdella.", grid_1: "Luo Kuva", grid_2: "Kirjoita Skripti", grid_3: "Syvä Haku", grid_4: "Syvä Ajattelu", lbl_lang: "Kieli", lbl_trans: "Läpinäkyvyys", lbl_model: "Malli", lbl_temp: "Luovuus", lbl_scale: "Skaala", lbl_audio: "Ääni", lbl_visual: "Visuaalinen", lbl_aes: "Estetiikka", lbl_vitals: "Elintoiminnot", lbl_core: "Direktiivi", erase_title: "Poista?", erase_desc: "Ei voi peruuttaa.", cancel: "Peruuta", purge: "Tyhjennä" },
+            no: { init: "Start", params: "Parametere", workspace: "ZXNV Arbeidsområde", subtitle: "Hva vil du bygge i dag?", placeholder: "Overfør spørring...", discard: "Avbryt", apply: "Bruk", new_chat: "Ny Interaksjon", verify: "ZXNV // Svar kan variere.", grid_1: "Generer Bilde", grid_2: "Skriv et Skript", grid_3: "Dyp Søk", grid_4: "Dyp Tenkning", lbl_lang: "Språk", lbl_trans: "Gjennomsiktighet", lbl_model: "Modell", lbl_temp: "Kreativitet", lbl_scale: "Skala", lbl_audio: "Lyd", lbl_visual: "Visuell", lbl_aes: "Estetikk", lbl_vitals: "Vitaler", lbl_core: "Direktiv", erase_title: "Slett Sekvens?", erase_desc: "Uopprettelig.", cancel: "Avbryt", purge: "Tøm Data" },
+            ms: { init: "Mulakan", params: "Parameter", workspace: "Ruang ZXNV", subtitle: "Apa yang ingin anda bina hari ini?", placeholder: "Hantar pertanyaan...", discard: "Batal", apply: "Mohon", new_chat: "Interaksi Baru", verify: "ZXNV // Maklum balas mungkin berbeza.", grid_1: "Jana Imej", grid_2: "Tulis Skrip", grid_3: "Carian Dalam", grid_4: "Pemikiran Mendalam", lbl_lang: "Bahasa", lbl_trans: "Ketelusan", lbl_model: "Model Neural", lbl_temp: "Kreativiti", lbl_scale: "Skala", lbl_audio: "Audio", lbl_visual: "Mod Visual", lbl_aes: "Estetika", lbl_vitals: "Tanda Vital", lbl_core: "Arahan Teras", erase_title: "Padam Urutan?", erase_desc: "Tindakan kekal.", cancel: "Batal", purge: "Padam Data" },
+            tl: { init: "Simulan", params: "Mga Parameter", workspace: "Puwang ng ZXNV", subtitle: "Ano ang gusto mong buuin ngayon?", placeholder: "Ipadala ang tanong...", discard: "Kanselahin", apply: "Ilapat", new_chat: "Bagong Interaksyon", verify: "ZXNV // Maaaring mag-iba ang mga tugon.", grid_1: "Gumawa ng Larawan", grid_2: "Sumulat ng Script", grid_3: "Malalim na Paghahanap", grid_4: "Malalim na Pag-iisip", lbl_lang: "Wika", lbl_trans: "Aninaw", lbl_model: "Modelo", lbl_temp: "Pagkamalikhain", lbl_scale: "Sukat", lbl_audio: "Audio", lbl_visual: "Visual", lbl_aes: "Aestetika", lbl_vitals: "Vitals", lbl_core: "Direktiba", erase_title: "Burahin?", erase_desc: "Hindi na maibabalik.", cancel: "Kanselahin", purge: "Linisin" },
+            he: { init: "התחל", params: "פרמטרים", workspace: "סביבת ZXNV", subtitle: "מה תרצה לבנות היום?", placeholder: "שלח שאילתה...", discard: "בטל", apply: "החל", new_chat: "אינטראקציה חדשה", verify: "ZXNV // התשובות עשויות להשתנות.", grid_1: "צור תמונה", grid_2: "כתוב קוד", grid_3: "חיפוש נתונים עמוק", grid_4: "חשיבה עמוקה", lbl_lang: "שפה", lbl_trans: "שקיפות", lbl_model: "מודל", lbl_temp: "יצירתיות", lbl_scale: "קנה מידה", lbl_audio: "שמע", lbl_visual: "חזותי", lbl_aes: "אסתטיקה", lbl_vitals: "מדדים", lbl_core: "הנחיה", erase_title: "מחק רצף?", erase_desc: "פעולה בלתי הפיכה.", cancel: "בטל", purge: "מחק נתונים" }
+        };
+
+        // NEW FEATURE: Neural Link Polyglot Map
+        const langNamesMap = {
+            en: "English", es: "Spanish", fr: "French", de: "German", it: "Italian", pt: "Portuguese",
+            ru: "Russian", zh: "Chinese (Simplified)", ja: "Japanese", ko: "Korean", ar: "Arabic", hi: "Hindi",
+            id: "Indonesian", tr: "Turkish", nl: "Dutch", pl: "Polish", sv: "Swedish", vi: "Vietnamese",
+            th: "Thai", uk: "Ukrainian", ro: "Romanian", cs: "Czech", el: "Greek", hu: "Hungarian",
+            da: "Danish", fi: "Finnish", no: "Norwegian", ms: "Malay", tl: "Tagalog", he: "Hebrew"
+        };
+
+        // --- STATE ---
+        const state = {
+            apiKey: "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", 
+            model: "openai/gpt-4o-mini",
+            systemPrompt: "You are ZXNV, a highly capable, sleek, and minimalist AI. Provide clear, direct, and well-formatted answers.",
+            fontSize: "text-base", 
+            audioEnabled: true,
+            performanceMode: false,
+            voidMode: false, 
+            vitalsEnabled: false, 
+            temperature: 0.7, 
+            transparency: 15, // Custom Glass Transparency
+            fontFamily: "'Inter', sans-serif",
+            contextLimit: 10,
+            sidebarVisible: true,
+            language: 'en', // UI Language
+            codeModeActive: false, 
+            brainstormModeActive: false,
+            contextCleared: false, 
+            chats: [],
+            localMessages: {}, 
+            currentChatId: null,
+            messages: [], 
+            userId: null,
+            isGenerating: false,
+            pendingAttachment: null 
+        };
+
+        const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30MB Limit for File Picker
+
+        // --- DOM ---
+        const elements = {
+            sidebar: document.getElementById('sidebar'),
+            sidebarOverlay: document.getElementById('sidebarOverlay'),
+            toggleSidebarBtn: document.getElementById('toggleSidebarBtn'),
+            closeSidebarBtn: document.getElementById('closeSidebarBtn'),
+            newChatBtn: document.getElementById('newChatBtn'),
+            chatList: document.getElementById('chatList'),
+            messagesContainer: document.getElementById('messagesContainer'),
+            emptyState: document.getElementById('emptyState'),
+            messageInput: document.getElementById('messageInput'),
+            sendBtn: document.getElementById('sendBtn'),
+            attachBtn: document.getElementById('attachBtn'),
+            fileInput: document.getElementById('fileInput'),
+            attachmentPreview: document.getElementById('attachmentPreview'),
+            previewName: document.getElementById('previewName'),
+            previewSize: document.getElementById('previewSize'),
+            previewIcon: document.getElementById('previewIcon'),
+            removeAttachmentBtn: document.getElementById('removeAttachmentBtn'),
+            
+            toolCodeMode: document.getElementById('toolCodeMode'),
+            toolBrainstorm: document.getElementById('toolBrainstorm'),
+            toolTranslate: document.getElementById('toolTranslate'),
+            toolClearContext: document.getElementById('toolClearContext'),
+            toolEnhance: document.getElementById('toolEnhance'),
+            toolFactCheck: document.getElementById('toolFactCheck'),
+
+            settingsBtn: document.getElementById('settingsBtn'),
+            settingsModal: document.getElementById('settingsModal'),
+            modalOverlay: document.getElementById('modalOverlay'),
+            settingsContent: document.getElementById('settingsContent'),
+            closeSettingsBtn: document.getElementById('closeSettingsBtn'),
+            cancelSettingsBtn: document.getElementById('cancelSettingsBtn'),
+            saveSettingsBtn: document.getElementById('saveSettingsBtn'),
+            
+            confirmModal: document.getElementById('confirmModal'),
+            confirmContent: document.getElementById('confirmContent'),
+            cancelConfirmBtn: document.getElementById('cancelConfirmBtn'),
+            acceptConfirmBtn: document.getElementById('acceptConfirmBtn'),
+
+            languageSelect: document.getElementById('languageSelect'),
+            transparencySlider: document.getElementById('transparencySlider'),
+            transparencyValueDisplay: document.getElementById('transparencyValueDisplay'),
+            fontFamilySelect: document.getElementById('fontFamilySelect'),
+            memorySlider: document.getElementById('memorySlider'),
+            memoryValueDisplay: document.getElementById('memoryValueDisplay'),
+
+            modelSelect: document.getElementById('modelSelect'),
+            fontSizeSelect: document.getElementById('fontSizeSelect'),
+            audioToggleBtn: document.getElementById('audioToggleBtn'),
+            audioToggleText: document.getElementById('audioToggleText'),
+            audioIconContainer: document.getElementById('audioIconContainer'),
+            performanceToggleBtn: document.getElementById('performanceToggleBtn'),
+            performanceToggleText: document.getElementById('performanceToggleText'),
+            performanceIconContainer: document.getElementById('performanceIconContainer'),
+            voidToggleBtn: document.getElementById('voidToggleBtn'),
+            voidToggleText: document.getElementById('voidToggleText'),
+            voidIconContainer: document.getElementById('voidIconContainer'),
+            vitalsToggleBtn: document.getElementById('vitalsToggleBtn'),
+            vitalsToggleText: document.getElementById('vitalsToggleText'),
+            vitalsIconContainer: document.getElementById('vitalsIconContainer'),
+            vitalsOverlay: document.getElementById('vitalsOverlay'),
+            pingDisplay: document.getElementById('pingDisplay'),
+            memDisplay: document.getElementById('memDisplay'),
+            temperatureSlider: document.getElementById('temperatureSlider'),
+            tempValueDisplay: document.getElementById('tempValueDisplay'),
+            systemPromptInput: document.getElementById('systemPromptInput'),
+            promptPreset: document.getElementById('promptPreset'),
+            currentChatTitle: document.getElementById('currentChatTitle'),
+            activeModelDisplay: document.getElementById('activeModelDisplay'),
+            userStatus: document.getElementById('userStatus'),
+            toast: document.getElementById('toast'),
+            toastMessage: document.getElementById('toastMessage'),
+            toastIconContainer: document.getElementById('toastIconContainer'),
+            exportChatBtn: document.getElementById('exportChatBtn'),
+            zenModeBtn: document.getElementById('zenModeBtn'),
+            metricsBtn: document.getElementById('metricsBtn')
+        };
+
+        document.body.classList.add(state.fontSize);
+
+        // --- AUDIO SYSTEM ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+
+        function playInterfaceSound(type) {
+            if (!state.audioEnabled) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            
+            const now = audioCtx.currentTime;
+            
+            if (type === 'send') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                gain.gain.setValueAtTime(0.05, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } else if (type === 'receive') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(400, now + 0.2);
+                gain.gain.setValueAtTime(0.03, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if (type === 'click') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(400, now);
+                gain.gain.setValueAtTime(0.02, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                osc.start(now); osc.stop(now + 0.05);
+            }
+        }
+
+        // --- FIREBASE & LOCAL STORAGE ---
+        let db = null;
+        let auth = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'zxnv-chat-app-v3';
+
+        async function initFirebase() {
+            try {
+                if (typeof __firebase_config === 'undefined') {
+                    elements.userStatus.textContent = "SYS: LOCAL ONLY";
+                    loadLocalSettings();
+                    listenToChats();
+                    return;
+                }
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        state.userId = user.uid;
+                        elements.userStatus.textContent = `SYS: ID_${user.uid.substring(0,6)}`;
+                        loadLocalSettings();
+                        listenToChats();
+                    } else {
+                        state.userId = null;
+                        elements.userStatus.textContent = "SYS: OFFLINE";
+                        listenToChats(); 
+                    }
+                });
+            } catch (err) {
+                elements.userStatus.textContent = "SYS: LOCAL ONLY";
+                loadLocalSettings();
+                listenToChats(); 
+            }
+        }
+
+        // --- SETTINGS, TRANSLATION & TRANSPARENCY ---
+        function loadLocalSettings() {
+            const savedSettings = localStorage.getItem('zxnv_settings_v3');
+            if (savedSettings) {
+                const parsed = JSON.parse(savedSettings);
+                if(parsed.model) state.model = parsed.model;
+                if(parsed.systemPrompt) state.systemPrompt = parsed.systemPrompt;
+                if(parsed.audioEnabled !== undefined) state.audioEnabled = parsed.audioEnabled;
+                if(parsed.performanceMode !== undefined) state.performanceMode = parsed.performanceMode;
+                if(parsed.voidMode !== undefined) state.voidMode = parsed.voidMode;
+                if(parsed.vitalsEnabled !== undefined) state.vitalsEnabled = parsed.vitalsEnabled;
+                if(parsed.temperature !== undefined) state.temperature = parsed.temperature;
+                if(parsed.transparency !== undefined) state.transparency = parsed.transparency;
+                if(parsed.fontFamily) state.fontFamily = parsed.fontFamily;
+                if(parsed.contextLimit !== undefined) state.contextLimit = parsed.contextLimit;
+                if(parsed.sidebarVisible !== undefined) {
+                    state.sidebarVisible = parsed.sidebarVisible;
+                    if(!state.sidebarVisible && window.innerWidth >= 768) {
+                        document.body.classList.add('sidebar-closed');
+                    }
+                }
+                if(parsed.language) state.language = parsed.language;
+                if(parsed.fontSize) {
+                    document.body.classList.remove(state.fontSize);
+                    state.fontSize = parsed.fontSize;
+                    document.body.classList.add(state.fontSize);
+                }
+            }
+            elements.activeModelDisplay.textContent = state.model.split('/').pop();
+            elements.languageSelect.value = state.language;
+            
+            document.body.style.fontFamily = state.fontFamily;
+            elements.fontFamilySelect.value = state.fontFamily;
+            
+            elements.memorySlider.value = state.contextLimit;
+            elements.memoryValueDisplay.textContent = `${state.contextLimit} Msgs`;
+
+            updateAudioToggleUI();
+            updatePerformanceToggleUI();
+            updateVoidToggleUI();
+            updateVitalsToggleUI();
+            updateTempDisplay(state.temperature);
+            elements.temperatureSlider.value = state.temperature;
+            
+            applyTransparency(state.transparency);
+            elements.transparencySlider.value = state.transparency;
+            
+            applyLanguageUI();
+        }
+
+        function saveLocalSettings() {
+            localStorage.setItem('zxnv_settings_v3', JSON.stringify({
+                model: state.model,
+                systemPrompt: state.systemPrompt,
+                fontSize: state.fontSize,
+                audioEnabled: state.audioEnabled,
+                performanceMode: state.performanceMode,
+                voidMode: state.voidMode,
+                vitalsEnabled: state.vitalsEnabled,
+                temperature: parseFloat(state.temperature),
+                transparency: parseInt(state.transparency),
+                fontFamily: state.fontFamily,
+                contextLimit: parseInt(state.contextLimit),
+                sidebarVisible: state.sidebarVisible,
+                language: state.language
+            }));
+            elements.activeModelDisplay.textContent = state.model.split('/').pop();
+        }
+
+        function applyTransparency(val) {
+            const numVal = parseInt(val);
+            // Map 0-100 to Chat Glass Specific variables (Alpha 0 to 0.15, Blur 0 to 64px)
+            const alpha = (numVal / 100) * 0.15;
+            const blur = (numVal / 100) * 64;
+            document.documentElement.style.setProperty('--chat-glass-alpha', alpha);
+            document.documentElement.style.setProperty('--chat-blur', `${blur}px`);
+            elements.transparencyValueDisplay.textContent = `Glass (${numVal}%)`;
+        }
+
+        elements.transparencySlider.addEventListener('input', (e) => {
+            state.transparency = e.target.value;
+            applyTransparency(state.transparency);
+        });
+
+        elements.memorySlider.addEventListener('input', (e) => {
+            state.contextLimit = e.target.value;
+            elements.memoryValueDisplay.textContent = `${state.contextLimit} Msgs`;
+        });
+
+        function applyLanguageUI() {
+            const lang = i18nDict[state.language] || i18nDict['en'];
+            const fallbackLang = i18nDict['en'];
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (lang[key]) el.textContent = lang[key];
+                else if (fallbackLang[key]) el.textContent = fallbackLang[key]; // Fallback preventing blank text
+            });
+            
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (lang[key]) el.setAttribute('placeholder', lang[key]);
+                else if (fallbackLang[key]) el.setAttribute('placeholder', fallbackLang[key]);
+            });
+            
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (lang[key]) el.setAttribute('placeholder', lang[key]);
+            });
+
+            // If empty chat title hasn't been changed by the user, translate it
+            if (state.messages.length === 0 && elements.currentChatTitle.textContent !== "Data Sequence") {
+                elements.currentChatTitle.textContent = lang.new_chat;
+            }
+        }
+
+        elements.languageSelect.addEventListener('change', (e) => {
+            state.language = e.target.value;
+            applyLanguageUI();
+        });
+
+        function updateAudioToggleUI() {
+            if (state.audioEnabled) {
+                elements.audioToggleText.textContent = "Enabled";
+                elements.audioIconContainer.innerHTML = '<i data-lucide="volume-2" class="w-4 h-4 text-white"></i>';
+            } else {
+                elements.audioToggleText.textContent = "Muted";
+                elements.audioIconContainer.innerHTML = '<i data-lucide="volume-x" class="w-4 h-4 text-gray-500"></i>';
+            }
+            lucide.createIcons();
+        }
+
+        function updatePerformanceToggleUI() {
+            if (state.performanceMode) {
+                document.body.classList.add('performance-mode');
+                elements.performanceToggleText.textContent = "Performance";
+                elements.performanceIconContainer.innerHTML = '<i data-lucide="zap" class="w-4 h-4 text-white"></i>';
+            } else {
+                document.body.classList.remove('performance-mode');
+                elements.performanceToggleText.textContent = "Ultra";
+                elements.performanceIconContainer.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4 text-white"></i>';
+            }
+            lucide.createIcons();
+        }
+
+        function updateVoidToggleUI() {
+            if (state.voidMode) {
+                document.body.classList.add('deep-void');
+                elements.voidToggleText.textContent = "Deep Void";
+                elements.voidIconContainer.innerHTML = '<i data-lucide="moon-star" class="w-4 h-4 text-indigo-400"></i>';
+            } else {
+                document.body.classList.remove('deep-void');
+                elements.voidToggleText.textContent = "Standard";
+                elements.voidIconContainer.innerHTML = '<i data-lucide="moon" class="w-4 h-4 text-gray-500"></i>';
+            }
+            lucide.createIcons();
+        }
+
+        function updateVitalsToggleUI() {
+            if (state.vitalsEnabled) {
+                elements.vitalsOverlay.classList.remove('hidden');
+                elements.vitalsToggleText.textContent = "Active";
+                elements.vitalsIconContainer.innerHTML = '<i data-lucide="activity" class="w-4 h-4 text-emerald-400"></i>';
+            } else {
+                elements.vitalsOverlay.classList.add('hidden');
+                elements.vitalsToggleText.textContent = "Hidden";
+                elements.vitalsIconContainer.innerHTML = '<i data-lucide="activity" class="w-4 h-4 text-gray-500"></i>';
+            }
+            lucide.createIcons();
+        }
+
+        function updateTempDisplay(val) {
+            let label = "Balanced";
+            if(val < 0.3) label = "Strict Logic";
+            else if(val > 1.2) label = "High Creative";
+            elements.tempValueDisplay.textContent = `${label} (${val})`;
+        }
+
+        setInterval(() => {
+            if(!state.vitalsEnabled) return;
+            elements.pingDisplay.textContent = Math.floor(Math.random() * 30 + 10) + 'ms';
+            if(performance.memory) elements.memDisplay.textContent = Math.round(performance.memory.usedJSHeapSize / 1048576) + ' MB';
+            else elements.memDisplay.textContent = 'OPT';
+        }, 2000);
+
+        elements.temperatureSlider.addEventListener('input', (e) => updateTempDisplay(e.target.value));
+
+        elements.audioToggleBtn.addEventListener('click', () => {
+            state.audioEnabled = !state.audioEnabled;
+            updateAudioToggleUI();
+            if(state.audioEnabled) playInterfaceSound('click');
+        });
+
+        elements.performanceToggleBtn.addEventListener('click', () => {
+            playInterfaceSound('click');
+            state.performanceMode = !state.performanceMode;
+            updatePerformanceToggleUI();
+        });
+
+        elements.voidToggleBtn.addEventListener('click', () => {
+            playInterfaceSound('click');
+            state.voidMode = !state.voidMode;
+            updateVoidToggleUI();
+        });
+
+        elements.vitalsToggleBtn.addEventListener('click', () => {
+            playInterfaceSound('click');
+            state.vitalsEnabled = !state.vitalsEnabled;
+            updateVitalsToggleUI();
+        });
+
+
+        // --- TOOLS ---
+        window.insertPrompt = function(promptText) {
+            playInterfaceSound('click');
+            elements.messageInput.value = promptText;
+            elements.messageInput.focus();
+            elements.messageInput.style.height = 'auto';
+            elements.messageInput.style.height = (elements.messageInput.scrollHeight) + 'px';
+        };
+
+        elements.toolCodeMode.addEventListener('click', () => {
+            playInterfaceSound('click');
+            state.codeModeActive = !state.codeModeActive;
+            elements.toolCodeMode.classList.toggle('active');
+            if(state.codeModeActive) showToast("Code Mode Enabled", "info");
+            else showToast("Code Mode Disabled", "info");
+        });
+
+        elements.toolBrainstorm.addEventListener('click', () => {
+            playInterfaceSound('click');
+            state.brainstormModeActive = !state.brainstormModeActive;
+            elements.toolBrainstorm.classList.toggle('active');
+            if(state.brainstormModeActive) showToast("Brainstorm Mode Enabled", "info");
+            else showToast("Brainstorm Mode Disabled", "info");
+        });
+
+        elements.toolTranslate.addEventListener('click', () => {
+            playInterfaceSound('click');
+            let currentText = elements.messageInput.value.trim();
+            if (!currentText) {
+                showToast("Enter a prompt to translate first.", "error");
+                return;
+            }
+            const activeLangFull = langNamesMap[state.language] || "English";
+            elements.messageInput.value = `Translate the following text into ${activeLangFull} natively and naturally:\n\n"${currentText}"`;
+            
+            elements.toolTranslate.classList.add('active');
+            setTimeout(() => elements.toolTranslate.classList.remove('active'), 500);
+            
+            elements.messageInput.style.height = 'auto';
+            elements.messageInput.style.height = (elements.messageInput.scrollHeight) + 'px';
+            elements.messageInput.focus();
+            showToast(`Wrapped for ${activeLangFull} translation.`, "info");
+        });
+
+        elements.toolEnhance.addEventListener('click', () => {
+            playInterfaceSound('click');
+            let currentText = elements.messageInput.value.trim();
+            if (!currentText) {
+                showToast("Enter a prompt to enhance first.", "error");
+                return;
+            }
+            elements.messageInput.value = `Act as a senior expert. Execute the following request with extreme detail, structured formatting, and step-by-step logical breakdown:\n\n"${currentText}"\n\nPlease ensure the highest quality output.`;
+            
+            elements.toolEnhance.classList.add('active');
+            setTimeout(() => elements.toolEnhance.classList.remove('active'), 500);
+            
+            elements.messageInput.style.height = 'auto';
+            elements.messageInput.style.height = (elements.messageInput.scrollHeight) + 'px';
+            elements.messageInput.focus();
+            showToast("Prompt enriched.", "info");
+        });
+
+        elements.toolFactCheck.addEventListener('click', () => {
+            playInterfaceSound('click');
+            if (state.messages.length < 1) {
+                showToast("No context to verify.", "error");
+                return;
+            }
+            elements.toolFactCheck.classList.add('active');
+            setTimeout(() => elements.toolFactCheck.classList.remove('active'), 500);
+            
+            elements.messageInput.value = "Please meticulously analyze the preceding information. Cross-reference facts, identify any logical fallacies or hallucinations, and provide a strict, bulleted verdict on its accuracy.";
+            handleSendMessage(true);
+            showToast("Verifying data integrity...", "info");
+        });
+
+        elements.toolClearContext.addEventListener('click', () => {
+            playInterfaceSound('click');
+            if (state.messages.length === 0) return;
+            state.contextCleared = true;
+            elements.messagesContainer.innerHTML = '';
+            elements.messagesContainer.appendChild(elements.emptyState);
+            elements.emptyState.style.display = 'flex';
+            applyLanguageUI(); // Update texts instantly
+            showToast("Temporary memory wiped.", "info");
+        });
+
+
+        // --- DATABASE / LOCAL PERSISTENCE OPS ---
+        
+        async function listenToChats() {
+            // 1. Instant local load (Zero Latency UI)
+            const localChats = JSON.parse(localStorage.getItem('zxnv_local_chats')) || [];
+            state.chats = localChats;
+            renderChatList();
+
+            if (!state.userId || !db) return;
+
+            // 2. Background cloud sync (Merge without overwriting local)
+            try {
+                const chatsRef = collection(db, 'artifacts', appId, 'users', state.userId, 'chats');
+                const snapshot = await getDocs(chatsRef);
+                const cloudChats = [];
+                snapshot.forEach(doc => { cloudChats.push({ id: doc.id, ...doc.data() }); });
+                
+                if (cloudChats.length > 0) {
+                    const mergedMap = new Map();
+                    localChats.forEach(c => mergedMap.set(c.id, c));
+                    cloudChats.forEach(c => {
+                        const existing = mergedMap.get(c.id);
+                        if (!existing || (c.updatedAt && existing.updatedAt && c.updatedAt > existing.updatedAt)) {
+                            mergedMap.set(c.id, c);
+                        }
+                    });
+                    
+                    const mergedChats = Array.from(mergedMap.values());
+                    mergedChats.sort((a, b) => {
+                        const timeA = a.updatedAt?.toMillis ? a.updatedAt.toMillis() : (a.updatedAt || 0);
+                        const timeB = b.updatedAt?.toMillis ? b.updatedAt.toMillis() : (b.updatedAt || 0);
+                        return timeB - timeA;
+                    });
+                    
+                    state.chats = mergedChats;
+                    localStorage.setItem('zxnv_local_chats', JSON.stringify(state.chats));
+                    renderChatList();
+                }
+            } catch(e) {
+                console.warn("Cloud chat sync delayed.");
+            }
+        }
+
+        async function createNewChatInDB(initialTitle) {
+            const newId = crypto.randomUUID();
+            const newChatObj = { id: newId, title: initialTitle, updatedAt: Date.now() };
+
+            // 1. Guarantee local storage save first
+            state.chats.unshift(newChatObj);
+            localStorage.setItem('zxnv_local_chats', JSON.stringify(state.chats));
+            
+            state.localMessages = JSON.parse(localStorage.getItem('zxnv_local_messages')) || {};
+            state.localMessages[newId] = [];
+            localStorage.setItem('zxnv_local_messages', JSON.stringify(state.localMessages));
+            
+            renderChatList();
+
+            // 2. Background sync to cloud with matching ID (DETACHED - No UI blocking)
+            if (state.userId && db) {
+                const chatDocRef = doc(db, 'artifacts', appId, 'users', state.userId, 'chats', newId);
+                setDoc(chatDocRef, { title: initialTitle, updatedAt: serverTimestamp(), createdAt: serverTimestamp() }).catch(e => console.error("Failed to sync new chat:", e));
+            }
+            return newId; 
+        }
+
+        function saveMessageToDB(chatId, messageObj) {
+            // 1. Prioritize Local Caching & Strip Heavy Payloads
+            state.localMessages = JSON.parse(localStorage.getItem('zxnv_local_messages')) || {};
+            if (!state.localMessages[chatId]) state.localMessages[chatId] = [];
+            
+            const msgToSave = { ...messageObj, timestamp: Date.now() };
+            if (!msgToSave.id) msgToSave.id = crypto.randomUUID();
+            
+            // Heavy Payload Stripper for Local Storage
+            const localMsgToSave = { ...msgToSave };
+            if (localMsgToSave.attachment && localMsgToSave.attachment.data && localMsgToSave.attachment.data.length > 500000) {
+                 localMsgToSave.attachment = { ...localMsgToSave.attachment, data: null };
+            }
+            
+            state.localMessages[chatId].push(localMsgToSave);
+            try { localStorage.setItem('zxnv_local_messages', JSON.stringify(state.localMessages)); } catch(e){}
+
+            // Update local chat list order
+            const chat = state.chats.find(c => c.id === chatId);
+            if (chat) {
+                chat.updatedAt = Date.now();
+                state.chats.sort((a, b) => b.updatedAt - a.updatedAt);
+                localStorage.setItem('zxnv_local_chats', JSON.stringify(state.chats));
+                renderChatList();
+            }
+
+            // 2. Sync to Firebase if Connected using exact matching ID
+            if (!state.userId || !db) return;
+            
+            // DETACHED CLOUD SYNC: Does not block the UI
+            (async () => {
+                try {
+                    const dbMsgToSave = { ...messageObj };
+                    if (dbMsgToSave.attachment && dbMsgToSave.attachment.data && dbMsgToSave.attachment.data.length > 900000) {
+                         dbMsgToSave.attachment = { ...dbMsgToSave.attachment, data: null };
+                    }
+
+                    const messagesRef = collection(db, 'artifacts', appId, 'users', state.userId, 'chats', chatId, 'messages');
+                    await setDoc(doc(messagesRef, msgToSave.id), { ...dbMsgToSave, timestamp: serverTimestamp() });
+                    
+                    const chatDocRef = doc(db, 'artifacts', appId, 'users', state.userId, 'chats', chatId);
+                    await updateDoc(chatDocRef, { updatedAt: serverTimestamp() });
+                } catch (e) {
+                    console.warn("Cloud Sync Dropped (likely payload size limit). Retained locally.");
+                }
+            })();
+        }
+
+        function loadChatMessages(chatId) {
+            state.contextCleared = false; 
+            
+            // 1. Instant load from local cache (PREVENTS LAG & BLANK SCREEN BUG)
+            state.localMessages = JSON.parse(localStorage.getItem('zxnv_local_messages')) || {};
+            const localMsgs = state.localMessages[chatId] || [];
+            state.messages = localMsgs;
+            renderMessages();
+            
+            if (!state.userId || !db) return;
+            
+            // 2. Passive background fetch from cloud (DETACHED)
+            (async () => {
+                try {
+                    const messagesRef = collection(db, 'artifacts', appId, 'users', state.userId, 'chats', chatId, 'messages');
+                    const snapshot = await getDocs(messagesRef);
+                    
+                    if (!snapshot.empty) {
+                        const cloudMsgs = [];
+                        snapshot.forEach(doc => cloudMsgs.push({ id: doc.id, ...doc.data() }));
+                        
+                        // Safely merge cloud and local messages without deleting unsynced local ones
+                        const mergedMap = new Map();
+                        localMsgs.forEach(m => mergedMap.set(m.id, m));
+                        cloudMsgs.forEach(m => mergedMap.set(m.id, m));
+                        
+                        const merged = Array.from(mergedMap.values());
+                        merged.sort((a, b) => {
+                            const timeA = a.timestamp?.toMillis ? a.timestamp.toMillis() : (a.timestamp || 0);
+                            const timeB = b.timestamp?.toMillis ? b.timestamp.toMillis() : (b.timestamp || 0);
+                            return timeA - timeB;
+                        });
+                        
+                        // Update local background cache
+                        state.localMessages[chatId] = merged;
+                        localStorage.setItem('zxnv_local_messages', JSON.stringify(state.localMessages));
+
+                        // Only refresh UI if user is still looking at this specific chat!
+                        if (state.currentChatId === chatId) {
+                            state.messages = merged;
+                            if(!state.contextCleared) renderMessages();
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Database fetch delayed, retaining local storage.", err);
+                }
+            })();
+        }
+
+        function resetToEmptyState() {
+            state.currentChatId = null;
+            state.messages = [];
+            state.contextCleared = false;
+            
+            applyLanguageUI(); // Will set the default title appropriately
+            renderMessages();
+            if(window.innerWidth < 768) toggleSidebar(false);
+        }
+
+        let chatToDelete = null;
+
+        function openConfirmModal(chatId) {
+            chatToDelete = chatId;
+            elements.confirmModal.classList.remove('hidden');
+            elements.modalOverlay.classList.remove('hidden');
+            void elements.confirmModal.offsetWidth; 
+            elements.confirmContent.classList.remove('opacity-0', 'scale-95');
+            elements.modalOverlay.classList.remove('opacity-0');
+            playInterfaceSound('click');
+        }
+
+        function closeConfirmModal() {
+            elements.confirmContent.classList.add('opacity-0', 'scale-95');
+            if(elements.settingsModal.classList.contains('hidden')) {
+                elements.modalOverlay.classList.add('opacity-0');
+            }
+            setTimeout(() => { 
+                elements.confirmModal.classList.add('hidden'); 
+                if(elements.settingsModal.classList.contains('hidden')) {
+                    elements.modalOverlay.classList.add('hidden');
+                }
+                chatToDelete = null;
+            }, 300);
+            playInterfaceSound('click');
+        }
+
+        elements.cancelConfirmBtn.onclick = closeConfirmModal;
+
+        elements.acceptConfirmBtn.onclick = async () => {
+            if (!chatToDelete) return;
+            const chatId = chatToDelete;
+            closeConfirmModal();
+            
+            // 1. Instant Local Erase
+            state.chats = state.chats.filter(c => c.id !== chatId);
+            localStorage.setItem('zxnv_local_chats', JSON.stringify(state.chats));
+            
+            state.localMessages = JSON.parse(localStorage.getItem('zxnv_local_messages')) || {};
+            if (state.localMessages[chatId]) {
+                delete state.localMessages[chatId];
+                localStorage.setItem('zxnv_local_messages', JSON.stringify(state.localMessages));
+            }
+
+            if(state.currentChatId === chatId) resetToEmptyState();
+            renderChatList();
+            showToast("Sequence erased.");
+
+            // 2. Background Cloud Erase
+            if(state.userId && db) {
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'chats', chatId));
+                } catch(e) { console.error("Cloud Delete Error:", e); }
+            }
+        };
+
+        // --- UI RENDERING ---
+        function renderChatList() {
+            elements.chatList.innerHTML = '';
+            state.chats.forEach(chat => {
+                const div = document.createElement('div');
+                const isActive = state.currentChatId === chat.id;
+                div.className = `group flex items-center justify-between p-3.5 rounded-2xl cursor-pointer transition-all duration-400 ${isActive ? 'bg-white/10 text-white shadow-inner border border-white/10' : 'text-gray-400 hover:bg-white/5 hover:text-white border border-transparent'}`;
+                div.onclick = () => { playInterfaceSound('click'); selectChat(chat.id, chat.title); };
+                
+                div.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <i data-lucide="${isActive ? 'circle-dot' : 'circle'}" class="w-3.5 h-3.5 flex-shrink-0 opacity-80"></i>
+                        <span class="truncate tracking-wide text-sm font-light">${chat.title}</span>
+                    </div>
+                    <button class="text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all liquid-button p-2 border-none rounded-full" title="Purge">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                `;
+                div.querySelector('button').onclick = (e) => {
+                    e.stopPropagation();
+                    openConfirmModal(chat.id);
+                };
+                elements.chatList.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        let currentSpeakingBtn = null;
+
+        window.readAloud = function(encodedText, btnElement) {
+            playInterfaceSound('click');
+            const container = btnElement.querySelector('.icon-container');
+            
+            if ('speechSynthesis' in window) {
+                // FIXED: Instant TTS Stop Toggle Logic
+                if (window.speechSynthesis.speaking) {
+                    window.speechSynthesis.cancel();
+                    if (currentSpeakingBtn === btnElement) {
+                        currentSpeakingBtn = null;
+                        container.innerHTML = '<i data-lucide="volume-1" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>';
+                        lucide.createIcons();
+                        return; // Stop execution here to just toggle off
+                    }
+                }
+                
+                // Reset icon of previously speaking button if user clicks a new one
+                if (currentSpeakingBtn) {
+                    const prevContainer = currentSpeakingBtn.querySelector('.icon-container');
+                    if (prevContainer) {
+                        prevContainer.innerHTML = '<i data-lucide="volume-1" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>';
+                    }
+                }
+                
+                currentSpeakingBtn = btnElement;
+                const text = decodeURIComponent(encodedText);
+                
+                const cleanText = text.replace(/#|\*|_|`|\[|\]|\(|\)/g, '');
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                
+                const voices = window.speechSynthesis.getVoices();
+                
+                // NEW FEATURE: Sync Voice Engine with the selected Global Language
+                const targetLang = state.language; 
+                const preferredVoice = voices.find(v => v.lang.toLowerCase().startsWith(targetLang) && (v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Daniel'))) 
+                                    || voices.find(v => v.lang.toLowerCase().startsWith(targetLang));
+                
+                if(preferredVoice) utterance.voice = preferredVoice;
+                
+                utterance.pitch = 0.95; utterance.rate = 1.05;
+                
+                utterance.onstart = () => {
+                    container.innerHTML = '<i data-lucide="volume-2" class="w-4 h-4 text-white"></i>';
+                    lucide.createIcons();
+                };
+                utterance.onend = () => {
+                    if (currentSpeakingBtn === btnElement) {
+                        container.innerHTML = '<i data-lucide="volume-1" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>';
+                        lucide.createIcons();
+                        currentSpeakingBtn = null;
+                    }
+                };
+                window.speechSynthesis.speak(utterance);
+            } else showToast("Speech synthesis unavailable.", "error");
+        };
+
+        window.copyMessage = function(encodedText, btnElement) {
+            playInterfaceSound('click');
+            const text = decodeURIComponent(encodedText);
+            const container = btnElement.querySelector('.icon-container');
+            
+            const successFeedback = () => {
+                container.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-white"></i>';
+                lucide.createIcons();
+                setTimeout(() => {
+                    container.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i>';
+                    lucide.createIcons();
+                }, 2000);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(successFeedback).catch(e => fallbackCopy(text, successFeedback));
+            else fallbackCopy(text, successFeedback);
+        };
+
+        function fallbackCopy(text, callback) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text; textArea.style.position = "fixed"; 
+            document.body.appendChild(textArea); textArea.focus(); textArea.select();
+            try { document.execCommand('copy'); callback(); } catch (err) {}
+            document.body.removeChild(textArea);
+        }
+
+        window.simplifyMessage = function(encodedText, btnElement) {
+            playInterfaceSound('click');
+            const text = decodeURIComponent(encodedText);
+            
+            const container = btnElement.querySelector('.icon-container');
+            container.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 text-white animate-spin"></i>';
+            lucide.createIcons();
+
+            const hiddenPrompt = `Please simplify and explain the following concept as if I were a beginner (ELI5):\n\n"${text}"`;
+            
+            elements.messageInput.value = hiddenPrompt;
+            handleSendMessage(true); 
+
+            setTimeout(() => {
+                container.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i>';
+                lucide.createIcons();
+            }, 2000);
+        }
+
+        function renderMessages() {
+            if(state.contextCleared) return; 
+            
+            const emptyStateEl = document.getElementById('emptyState');
+            if(emptyStateEl && emptyStateEl.parentNode === elements.messagesContainer) {
+                elements.messagesContainer.removeChild(emptyStateEl);
+            }
+            
+            const children = Array.from(elements.messagesContainer.children);
+            children.forEach(child => {
+                elements.messagesContainer.removeChild(child);
+            });
+            
+            if (state.messages.length === 0) {
+                if(emptyStateEl) {
+                    elements.messagesContainer.appendChild(emptyStateEl);
+                    emptyStateEl.style.display = 'flex';
+                }
+                return;
+            }
+            
+            if(emptyStateEl) {
+                emptyStateEl.style.display = 'none';
+                elements.messagesContainer.appendChild(emptyStateEl);
+            }
+
+            // Render Messages
+            state.messages.forEach(msg => {
+                const msgDiv = document.createElement('div');
+                const isUser = msg.role === 'user';
+                
+                msgDiv.className = `flex ${isUser ? 'justify-end' : 'justify-start'} animate-message w-full`;
+                
+                let contentHTML = '';
+                
+                if (isUser) {
+                    let attachmentHTML = '';
+                    if (msg.attachment) {
+                        if (msg.attachment.type.startsWith('image/')) {
+                            if (msg.attachment.data) {
+                                attachmentHTML = `<img src="${msg.attachment.data}" class="max-w-[200px] md:max-w-xs rounded-2xl mb-3 shadow-[0_10px_30px_rgba(0,0,0,0.8)] border border-white/10">`;
+                            } else {
+                                attachmentHTML = `<div class="bg-black/50 border border-white/10 rounded-xl p-3 mb-3 flex items-center gap-3 text-sm text-gray-400"><i data-lucide="image" class="w-4 h-4"></i><span class="truncate font-mono text-xs">[Archived Media]</span></div>`;
+                            }
+                        } else {
+                            attachmentHTML = `
+                                <div class="bg-black/50 border border-white/10 rounded-xl p-3 mb-3 flex items-center gap-3 text-sm">
+                                    <i data-lucide="file-text" class="w-4 h-4 text-white/70"></i>
+                                    <span class="truncate text-white/90 font-mono text-xs">${msg.attachment.name}</span>
+                                </div>`;
+                        }
+                    }
+                    contentHTML = `
+                        <div class="max-w-[90%] md:max-w-[75%] bg-white text-black rounded-[2rem] rounded-tr-lg px-6 py-4 shadow-[0_20px_40px_rgba(255,255,255,0.05)] relative">
+                            ${attachmentHTML}
+                            <p class="whitespace-pre-wrap leading-relaxed font-medium text-sm md:text-base">${escapeHTML(msg.content)}</p>
+                        </div>
+                    `;
+                } else {
+                    const parsedMarkdown = marked.parse(msg.content || "");
+                    const encodedContent = encodeURIComponent(msg.content || "").replace(/'/g, "%27");
+                    contentHTML = `
+                        <div class="group relative max-w-[100%] md:max-w-[85%] chat-glass rounded-[2rem] rounded-tl-lg px-6 md:px-8 py-5 md:py-6 w-full">
+                            
+                            <div class="absolute -top-3 md:top-4 right-4 flex gap-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-black/80 md:bg-transparent rounded-full md:rounded-none p-1 md:p-0 border border-white/10 md:border-none shadow-xl md:shadow-none">
+                                <button onclick="simplifyMessage('${encodedContent}', this)" class="p-2 liquid-button rounded-full text-gray-400 hover:text-white border-none md:border-solid shadow-none" title="Simplify (ELI5)">
+                                    <span class="icon-container"><i data-lucide="sparkles" class="w-3.5 h-3.5 md:w-4 md:h-4"></i></span>
+                                </button>
+                                <button onclick="readAloud('${encodedContent}', this)" class="p-2 liquid-button rounded-full text-gray-400 hover:text-white border-none md:border-solid shadow-none" title="Read Aloud">
+                                    <span class="icon-container"><i data-lucide="volume-1" class="w-3.5 h-3.5 md:w-4 md:h-4"></i></span>
+                                </button>
+                                <button onclick="copyMessage('${encodedContent}', this)" class="p-2 liquid-button rounded-full text-gray-400 hover:text-white border-none md:border-solid shadow-none" title="Copy Data">
+                                    <span class="icon-container"><i data-lucide="copy" class="w-3.5 h-3.5 md:w-4 md:h-4"></i></span>
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 mb-4 border-b border-white/5 pb-3">
+                                <div class="p-1.5 bg-white rounded-full text-black shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                                    <i data-lucide="triangle" class="w-2.5 h-2.5 fill-current"></i>
+                                </div>
+                                <span class="text-[10px] text-gray-400 font-mono tracking-[0.2em] uppercase">ZXNV System</span>
+                            </div>
+                            <div class="markdown-body text-gray-100 overflow-hidden w-full break-words">${parsedMarkdown}</div>
+                        </div>
+                    `;
+                }
+
+                msgDiv.innerHTML = contentHTML;
+                elements.messagesContainer.appendChild(msgDiv);
+            });
+
+            lucide.createIcons();
+            scrollToBottom();
+        }
+
+        function showTypingIndicator() {
+            if(state.contextCleared) {
+                state.contextCleared = false; 
+                renderMessages(); 
+            }
+            
+            const emptyStateEl = document.getElementById('emptyState');
+            if(emptyStateEl) emptyStateEl.style.display = 'none';
+
+            const indicator = document.createElement('div');
+            indicator.id = 'typingIndicator';
+            indicator.className = 'flex justify-start animate-message w-full';
+            indicator.innerHTML = `
+                <div class="chat-glass rounded-[2rem] rounded-tl-lg px-8 py-6 flex items-center gap-4">
+                     <div class="p-1.5 bg-white/20 rounded-full text-white"><i data-lucide="triangle" class="w-2.5 h-2.5 fill-current opacity-50"></i></div>
+                     <div class="flex items-center h-4 gap-2">
+                        <div class="pulse-orb"></div><div class="pulse-orb"></div><div class="pulse-orb"></div>
+                     </div>
+                </div>
+            `;
+            elements.messagesContainer.appendChild(indicator);
+
+            lucide.createIcons();
+            scrollToBottom();
+        }
+
+        function hideTypingIndicator() {
+            const ind = document.getElementById('typingIndicator');
+            if (ind) ind.remove();
+        }
+
+        function scrollToBottom() {
+            elements.messagesContainer.scrollTo({
+                top: elements.messagesContainer.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        function escapeHTML(str) {
+            if (!str) return "";
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+        }
+
+        // --- FILE HANDLING ---
+        elements.attachBtn.addEventListener('click', () => { playInterfaceSound('click'); elements.fileInput.click(); });
+
+        elements.fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > MAX_FILE_SIZE) { showToast(`Payload exceeds limits.`, "error"); elements.fileInput.value = ''; return; }
+
+            const isImage = file.type.startsWith('image/');
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                state.pendingAttachment = { file: file, name: file.name, type: file.type, size: formatBytes(file.size), data: event.target.result };
+                elements.previewName.textContent = file.name; elements.previewSize.textContent = formatBytes(file.size);
+                
+                if (isImage) elements.previewIcon.innerHTML = `<img src="${event.target.result}" class="w-full h-full object-cover">`;
+                else elements.previewIcon.innerHTML = `<i data-lucide="file-text" class="w-6 h-6 text-white/80"></i>`;
+                
+                lucide.createIcons(); elements.attachmentPreview.classList.remove('hidden'); elements.messageInput.focus();
+            };
+
+            if (isImage) reader.readAsDataURL(file); else reader.readAsText(file); 
+        });
+
+        elements.removeAttachmentBtn.addEventListener('click', clearAttachment);
+
+        function clearAttachment() {
+            playInterfaceSound('click'); state.pendingAttachment = null; elements.fileInput.value = ''; elements.attachmentPreview.classList.add('hidden');
+        }
+
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 B'; const k = 1024; const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['B', 'KB', 'MB', 'GB']; const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        async function startNewChat() {
+            playInterfaceSound('click');
+            
+            if (state.messages.length === 0 && state.currentChatId) {
+                if(window.innerWidth < 768) toggleSidebar(false);
+                elements.messageInput.focus();
+                return;
+            }
+
+            const lang = i18nDict[state.language] || i18nDict['en'];
+            const newTitle = lang.new_chat;
+            
+            state.currentChatId = await createNewChatInDB(newTitle);
+            elements.currentChatTitle.textContent = newTitle;
+            
+            state.messages = []; 
+            state.contextCleared = false;
+            
+            loadChatMessages(state.currentChatId);
+            
+            renderChatList(); 
+            // renderMessages() is called instantly inside loadChatMessages
+            
+            if(window.innerWidth < 768) toggleSidebar(false);
+            elements.messageInput.focus();
+        }
+
+        function selectChat(chatId, title) {
+            if (state.currentChatId === chatId) {
+                if(window.innerWidth < 768) toggleSidebar(false);
+                return;
+            }
+            state.currentChatId = chatId; 
+            elements.currentChatTitle.textContent = title;
+            
+            renderChatList(); // Instant active highlight update
+            loadChatMessages(chatId); // Instant zero-latency memory load
+            
+            if(window.innerWidth < 768) toggleSidebar(false);
+        }
+
+        elements.sendBtn.addEventListener('click', () => handleSendMessage(false));
+        elements.messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(false); }
+        });
+        elements.messageInput.addEventListener('input', function() {
+            this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';
+            if(this.value === '') this.style.height = 'auto';
+        });
+
+        async function handleSendMessage(isSystemTriggered = false) {
+            if (state.isGenerating) return;
+            const text = elements.messageInput.value.trim();
+            const attachment = state.pendingAttachment;
+            if (!text && !attachment) return;
+
+            playInterfaceSound('send');
+            elements.messageInput.value = ''; elements.messageInput.style.height = 'auto';
+            clearAttachment();
+            
+            let finalPromptText = text;
+            const localMsgId = crypto.randomUUID();
+            let messageObjForDB = { id: localMsgId, role: 'user', content: text };
+            
+            if (attachment) {
+                if (attachment.type.startsWith('image/')) {
+                    messageObjForDB.attachment = { name: attachment.name, type: attachment.type, data: attachment.data };
+                } else {
+                    finalPromptText += `\n\n[Attached Data: ${attachment.name}]\n${attachment.data}`;
+                    messageObjForDB.content = finalPromptText; 
+                    messageObjForDB.attachment = { name: attachment.name, type: attachment.type }; 
+                }
+            }
+
+            if (state.messages.length === 0 && state.currentChatId && !isSystemTriggered) {
+                const title = text ? (text.length > 20 ? text.substring(0, 20) + "..." : text) : "Data Sequence";
+                elements.currentChatTitle.textContent = title;
+                
+                // Immediately update local title
+                const chat = state.chats.find(c => c.id === state.currentChatId);
+                if (chat) { chat.title = title; chat.updatedAt = Date.now(); }
+                localStorage.setItem('zxnv_local_chats', JSON.stringify(state.chats));
+                renderChatList();
+                
+                if (db && state.userId) {
+                    updateDoc(doc(db, 'artifacts', appId, 'users', state.userId, 'chats', state.currentChatId), { title: title }).catch(e => {});
+                }
+            } else if (!state.currentChatId) {
+                const title = text ? (text.length > 20 ? text.substring(0, 20) + "..." : text) : "Data Sequence";
+                state.currentChatId = await createNewChatInDB(title);
+                elements.currentChatTitle.textContent = title;
+            }
+
+            // GUARANTEE: Push locally first so it immediately renders
+            state.messages.push(messageObjForDB);
+            
+            if(state.contextCleared) state.contextCleared = false;
+            renderMessages();
+            
+            // Fire and forget, no longer blocks UI
+            saveMessageToDB(state.currentChatId, messageObjForDB);
+            await fetchAIResponse();
+        }
+
+        async function fetchAIResponse() {
+            state.isGenerating = true; elements.sendBtn.disabled = true; showTypingIndicator();
+
+            try {
+                let activeSystemPrompt = state.systemPrompt;
+                if(state.codeModeActive) {
+                    activeSystemPrompt = "You are an expert programmer. You must ONLY output valid code blocks. Do not explain the code. Do not add conversational text. Provide exclusively the raw code solution.";
+                }
+
+                // NEW FEATURE: Neural Link Language Injection Engine
+                // If a non-English language is selected, force the AI to use it natively
+                if (state.language !== 'en') {
+                    const activeLangFull = langNamesMap[state.language] || "English";
+                    activeSystemPrompt += `\n\nCRITICAL DIRECTIVE: You MUST process this input and write your entire response natively in the ${activeLangFull} language. Do not reply in English. Translating accurately to ${activeLangFull} is your highest priority.`;
+                }
+                
+                if (state.brainstormModeActive) {
+                    activeSystemPrompt += `\n\nCRITICAL DIRECTIVE: You are in Brainstorm Mode. Abandon conventional thinking. Provide highly creative, lateral, and unconventional ideas. Think entirely out of the box.`;
+                }
+
+                let messagesPayload = [ { role: "system", content: activeSystemPrompt } ];
+                
+                // USE SLIDER SETTING: Slice the messages based on user's memory limit
+                const contextLimit = parseInt(state.contextLimit) || 10;
+                const recentMessages = state.messages.slice(-contextLimit); 
+                
+                recentMessages.forEach(msg => {
+                    if (msg.role === 'user') {
+                        let contentArr = [];
+                        if (msg.content) contentArr.push({ type: "text", text: msg.content });
+                        if (msg.attachment && msg.attachment.type.startsWith('image/')) {
+                            // Don't resend stripped images if they were wiped by the sanitizer
+                            if (msg.attachment.data) {
+                                contentArr.push({ type: "image_url", image_url: { url: msg.attachment.data } });
+                            }
+                        }
+                        messagesPayload.push({ role: "user", content: contentArr });
+                    } else messagesPayload.push({ role: "assistant", content: msg.content });
+                });
+
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${state.apiKey}`,
+                        "HTTP-Referer": window.location.href,
+                        "X-Title": "ZXNV Monochrome",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ 
+                        model: state.model, 
+                        messages: messagesPayload,
+                        temperature: parseFloat(state.temperature)
+                    })
+                });
+
+                if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                const data = await response.json(); const aiText = data.choices[0].message.content;
+
+                playInterfaceSound('receive');
+                const aiMessageObj = { id: crypto.randomUUID(), role: "assistant", content: aiText };
+                
+                // GUARANTEE: Push locally first so it immediately renders
+                state.messages.push(aiMessageObj);
+                renderMessages();
+                
+                // Fire and forget, no longer blocks UI
+                saveMessageToDB(state.currentChatId, aiMessageObj);
+
+            } catch (error) {
+                showToast("Connection failed.", "error");
+                state.messages.push({ id: crypto.randomUUID(), role: "assistant", content: `**System Alert:** Neural link severed. (${error.message})` });
+                renderMessages();
+            } finally {
+                state.isGenerating = false; elements.sendBtn.disabled = false; hideTypingIndicator();
+            }
+        }
+
+        // --- UI & INTERACTIONS ---
+        function toggleSidebar(forceShow = null) {
+            const isDesktop = window.innerWidth >= 768;
+            
+            if (isDesktop) {
+                // Smooth Desktop Logic
+                const isCurrentlyShown = !document.body.classList.contains('sidebar-closed');
+                const show = forceShow !== null ? forceShow : !isCurrentlyShown;
+                
+                if (show) {
+                    document.body.classList.remove('sidebar-closed');
+                } else {
+                    document.body.classList.add('sidebar-closed');
+                }
+                
+                state.sidebarVisible = show;
+                saveLocalSettings();
+                
+            } else {
+                // Fast Mobile Logic
+                const isCurrentlyShown = !elements.sidebar.classList.contains('-translate-x-full');
+                const show = forceShow !== null ? forceShow : !isCurrentlyShown;
+                
+                if (show) {
+                    elements.sidebar.classList.remove('-translate-x-full');
+                    elements.sidebarOverlay.classList.remove('hidden');
+                    // reflow
+                    void elements.sidebarOverlay.offsetWidth;
+                    elements.sidebarOverlay.classList.remove('opacity-0');
+                } else {
+                    elements.sidebar.classList.add('-translate-x-full');
+                    elements.sidebarOverlay.classList.add('opacity-0');
+                    setTimeout(() => { elements.sidebarOverlay.classList.add('hidden'); }, 500);
+                }
+            }
+        }
+        
+        elements.toggleSidebarBtn.onclick = () => { playInterfaceSound('click'); toggleSidebar(); };
+        elements.closeSidebarBtn.onclick = () => { playInterfaceSound('click'); toggleSidebar(false); };
+        elements.sidebarOverlay.onclick = () => toggleSidebar(false);
+        elements.newChatBtn.onclick = startNewChat;
+
+        function openSettings() {
+            playInterfaceSound('click');
+            elements.languageSelect.value = state.language;
+            elements.transparencySlider.value = state.transparency;
+            elements.fontFamilySelect.value = state.fontFamily;
+            elements.memorySlider.value = state.contextLimit;
+            elements.modelSelect.value = state.model; 
+            elements.fontSizeSelect.value = state.fontSize;
+            elements.systemPromptInput.value = state.systemPrompt; 
+            elements.promptPreset.value = ""; 
+            elements.temperatureSlider.value = state.temperature;
+            
+            updateTempDisplay(state.temperature);
+            
+            elements.settingsModal.classList.remove('hidden'); elements.modalOverlay.classList.remove('hidden');
+            void elements.settingsModal.offsetWidth;
+            elements.modalOverlay.classList.remove('opacity-0'); elements.settingsContent.classList.remove('opacity-0', 'scale-95');
+        }
+
+        function closeSettings() {
+            playInterfaceSound('click');
+            elements.modalOverlay.classList.add('opacity-0'); elements.settingsContent.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => { elements.settingsModal.classList.add('hidden'); elements.modalOverlay.classList.add('hidden'); }, 500);
+        }
+
+        elements.promptPreset.addEventListener('change', (e) => { if(e.target.value) elements.systemPromptInput.value = e.target.value; });
+
+        function saveSettings() {
+            playInterfaceSound('click');
+            state.model = elements.modelSelect.value; 
+            state.systemPrompt = elements.systemPromptInput.value;
+            state.temperature = parseFloat(elements.temperatureSlider.value);
+            state.fontFamily = elements.fontFamilySelect.value;
+            state.contextLimit = parseInt(elements.memorySlider.value);
+            
+            document.body.style.fontFamily = state.fontFamily;
+            
+            const newFontSize = elements.fontSizeSelect.value;
+            if (state.fontSize !== newFontSize) { document.body.classList.remove(state.fontSize); state.fontSize = newFontSize; document.body.classList.add(state.fontSize); }
+            saveLocalSettings(); closeSettings(); showToast("System updated.");
+        }
+
+        elements.settingsBtn.onclick = openSettings; elements.closeSettingsBtn.onclick = closeSettings;
+        elements.cancelSettingsBtn.onclick = closeSettings; elements.saveSettingsBtn.onclick = saveSettings;
+
+        elements.exportChatBtn.addEventListener('click', () => {
+            playInterfaceSound('click');
+            if(state.messages.length === 0) { showToast("No data to export.", "error"); return; }
+            let exportData = `# Sequence: ${elements.currentChatTitle.textContent}\nDate: ${new Date().toLocaleString()}\n\n---\n\n`;
+            state.messages.forEach(m => { exportData += `### ${m.role === 'user' ? 'USER' : 'ZXNV AI'}\n${m.content}\n\n`; });
+            const blob = new Blob([exportData], { type: 'text/markdown' }); const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = `ZXNV_${elements.currentChatTitle.textContent.replace(/\s+/g, '_')}.md`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+            showToast("Data exported successfully.");
+        });
+
+        // NEW FEATURE: Sequence Metrics
+        elements.metricsBtn.addEventListener('click', () => {
+            playInterfaceSound('click');
+            const msgCount = state.messages.length;
+            if (msgCount === 0) {
+                showToast("Sequence empty. Zero tokens used.", "info");
+                return;
+            }
+            let charCount = 0;
+            state.messages.forEach(m => charCount += (m.content || "").length);
+            const estTokens = Math.round(charCount / 4); // Standard approximation
+            showToast(`Metrics: ${msgCount} Msgs | ~${estTokens.toLocaleString()} Tokens`, "info");
+        });
+
+        let toastTimeout;
+        function showToast(message, type = "info") {
+            elements.toastMessage.textContent = message;
+            if (type === "error") {
+                elements.toastIconContainer.className = 'bg-[#1a0000] p-2 rounded-full shadow-inner text-red-500 border border-red-900/50 flex items-center justify-center';
+                elements.toastIconContainer.innerHTML = '<i data-lucide="alert-triangle" class="w-4 h-4"></i>';
+            } else {
+                elements.toastIconContainer.className = 'bg-white/10 p-2 rounded-full shadow-inner text-white flex items-center justify-center';
+                elements.toastIconContainer.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i>';
+            }
+            lucide.createIcons();
+            elements.toast.classList.remove('-translate-y-[200%]', 'opacity-0');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => { elements.toast.classList.add('-translate-y-[200%]', 'opacity-0'); }, 3000);
+        }
+
+        if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        initFirebase();
+    </script>
+</body>
+</html>
